@@ -1,0 +1,377 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@list = @{map.get("list").asInstanceOf[java.util.List[Auto]]}
+@total = @{map.get("total").asInstanceOf[Long]}
+@param = @{map.get("param").asInstanceOf[pojos.Param]}
+@pager = @{new pojos.Pager(total, param.getPage, param.getSize)}
+@account =  @{Auth.getAccount(request)}
+
+@dash.layout("Dashboard", styles = styles, scripts = scripts, request = request) {
+    <div class="dashboard">
+
+        <div class="alert alert-warning">
+            <div class="float-start" style="width: 50%">
+                <div class="float-start" style="width: 20%">
+                    <img style="width: 90%" src="@account.image()" >
+                </div>
+                <div class="float-end" style="text-wrap: wrap; width: 80%">
+                    @account.businessName
+                    <br/>
+                    (@account.locality)
+                </div>
+            </div>
+            <div class="float-end" style="width: 50%">
+                <p style="text-wrap: wrap;"><i class="ion-ios-telephone"></i> @account.phone</p>
+                <p style="text-wrap: wrap;"><i class="ion-social-whatsapp"></i> @account.whatsapp</p>
+                <p style="text-wrap: wrap;">@account.email</p>
+            </div>
+            <br class="clear">
+            <div style="text-align: center">
+                <a href="@routes.AcProfileController.edit()" class="btn btn-link" style="padding-left: 0; color: #664d03">Edit Profile</a>
+            </div>
+        </div>
+
+        <div style="background: #fff; padding: 5px" class="mt-5">
+            <div>
+                <a href="@routes.AcAutoController.index()" style="text-decoration: underline; font-size: 20px; color: #ce8339">
+                    @if(request.queryString("trashed").isPresent) {
+                        Back To My Ads
+                    } else {
+                        My Ads (@total)
+                    }
+                </a>
+            </div>
+            <form action="@routes.AcAutoController.index()" id="findForm">
+                <div class="search-field listing-search">
+                    <div class="row">
+                        <div class="single-field col-md-2 col-6 mt-2">
+                            <label class="field-label">Price</label>
+                            <select name="priceRange" class="form-select optgroup_test">
+                                <option value="">Price Range</option>
+                                @for((key, value) <- Util.getPriceRanges) {
+                                    <option value="@key" @if(key.equals(getParam("priceRange"))){selected}>@value</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2">
+                            <label class="field-label">Year</label>
+                            <select name="year" class="form-select optgroup_test">
+                                <option value="">All Years</option>
+                                @for((value,name) <- USelect.selectYears()) {
+                                    <option value="@value" @if(value.equals(getParam("year"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2">
+                            <label class="field-label">Make</label>
+                            <select name="makeId" class="form-select optgroup_test">
+                                <option value="">All Makes</option>
+                                @for((id,name) <- USelect.selectMakes(1)) {
+                                    <option value="@id" @if(id.equals(getParam("makeId"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2">
+                            <label class="field-label">Model</label>
+                            <select name="modelId" class="form-select optgroup_test" id="modelSelect">
+                                <option value="">All Models</option>
+                                @for((make, models) <- USelect.getMakeModels(1)) {
+                                    <optgroup label="@make">
+                                    @for((id, model) <- models) {
+                                        <option value="@id" @if(id.equals(getParam("modelId"))){selected}>@model</option>
+                                    }
+                                    </optgroup>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2">
+                            <label class="field-label">Body Type</label>
+                            <select name="bodyTypeId" class="form-select optgroup_test">
+                                <option value="">All Body Types</option>
+                                @for((id,name) <- USelect.selectBodyTypes(1)) {
+                                    <option value="@id" @if(id.equals(getParam("bodyTypeId"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2 hide">
+                            <label class="field-label">Mileage</label>
+                            <select name="mileageRange" class="form-select optgroup_test">
+                                <option value="">Mileage Range</option>
+                                @for((key, value) <- Util.getMileageRanges) {
+                                    <option value="@key" @if(key.equals(getParam("mileageRange"))){selected}>@value</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2 hide">
+                            <label class="field-label">Transmission</label>
+                            <select name="transmissionId" class="form-select optgroup_test">
+                                <option value="">All Transmissions</option>
+                                @for((id,name) <- USelect.selectTransmissions(1)) {
+                                    <option value="@id" @if(id.equals(getParam("transmissionId"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2 hide">
+                            <label class="field-label">Fuel Type</label>
+                            <select name="fuelTypeId" class="form-select optgroup_test">
+                                <option value="">All Fuel Types</option>
+                                @for((id,name) <- USelect.selectFuelTypes(1)) {
+                                    <option value="@id" @if(id.equals(getParam("fuelTypeId"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2 hide">
+                            <label class="field-label">Exterior Color</label>
+                            <select name="colorExteriorId" class="form-select optgroup_test">
+                                <option value="">Exterior Colors</option>
+                                @for((id,name) <- USelect.selectColors(1)) {
+                                    <option value="@id" @if(id.equals(getParam("colorExteriorId"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2 hide">
+                            <label class="field-label">Interior Color</label>
+                            <select name="colorInteriorId" class="form-select optgroup_test">
+                                <option value="">Select Interior Color</option>
+                                @for((id, name) <- USelect.selectColors(1)) {
+                                    <option value="@id" @if(id.equals(getParam("colorInteriorId"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2 hide">
+                            <label class="field-label">Condition</label>
+                            <select name="conditionId" class="form-select optgroup_test">
+                                <option value="">All Conditions</option>
+                                @for((id,name) <- USelect.selectConditions(1)) {
+                                    <option value="@id" @if(id.equals(getParam("conditionId"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2 hide">
+                            <label class="field-label">State</label>
+                            <select name="stateId" class="form-select optgroup_test">
+                                <option value="">All States</option>
+                                @for((id,name) <- USelect.selectStates(1)) {
+                                    <option value="@id" @if(id.equals(getParam("stateId"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="single-field col-md-2 col-6 mt-2 hide">
+                            <label class="field-label">Locality</label>
+                            <select name="localityId" class="form-select optgroup_test" id="localitySelect">
+                                <option value="">All Localities</option>
+                                @for((state, localities) <- USelect.getStateLocalities(1)) {
+                                    <optgroup label="@state">
+                                    @for((id, locality) <- localities) {
+                                        <option value="@id" @if(id.equals(getParam("localityId"))){selected}>@locality</option>
+                                    }
+                                    </optgroup>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 col-6 mt-2">
+                            <button class="main-btn d-block filter-btn">Filter</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="filter-more-btn">More Filter</button>
+            </form>
+            <hr/>
+            <div class="ads-tabs mt-50">
+                <div class="tabs-menus">
+                    @*<ul class="nav panel-tabs" role="tablist">
+                    <li class=""><a href="#tab1" class="active" data-bs-toggle="tab" aria-selected="true" role="tab">All Ads (20)</a></li>
+                    <li><a href="#tab2" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab">Published (08)</a></li>
+                    <li><a href="#tab3" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab">Featured (05)</a></li>
+                    <li><a href="#tab4" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab">Sold (03)</a></li>
+                    <li><a href="#tab5" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab">Active (03)</a></li>
+                    <li><a href="#tab6" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab">Expired (01)</a></li>
+                    </ul>*@
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active table-responsive" id="tab1" role="tabpanel">
+                        <table class="table table-bordered table-hover mb-0 text-nowrap ctable">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Item</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            @for(auto <- list) {
+                                <tr>
+                                    <td>
+                                        <label class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" name="checkbox" value="checkbox" /> <span class="custom-control-label"></span> </label>
+                                    </td>
+                                    <td>
+                                        <div class="card-aside-img">
+                                        @if(!auto.getPictures.isEmpty) {
+                                            @for((image,i) <- auto.getPictures.zipWithIndex) {
+                                                <a class="@auto.getRef-fancybox text-center @if(i!=0){hide}" rel="group"
+                                                href="@StaticAssets.getImg(image.getUrl("large"))?v=@Util.generateUniqueId(10)">
+                                                    <img
+                                                        @if(i==0) {
+                                                            src="@StaticAssets.getImg(image.getUrl("medium"))?v=@Util.generateUniqueId(10)"
+                                                        }
+                                                    alt="" class="img-thumb"/>
+                                                </a>
+                                            }
+                                        } else {
+                                            <img src="@StaticAssets.getUrl("image_not_available.png")" class="img-thumb">
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="@routes.ListingController.listing(auto.getUrl)" target="_blank"
+                                        style="display:block;font-weight:bold;text-wrap:wrap;">
+                                        @auto.caption
+                                        </a>
+                                        <br/>
+                                        @auto.locality / @auto.locality.parent
+                                        <br />
+                                        Posted: @auto.created.format("dd-MM-yyyy")
+                                    </td>
+                                    <td>
+                                        @auto.model / @auto.model.parent
+
+                                        @if(auto.condition != null) {
+                                            <br/>
+                                            @auto.condition
+                                        }
+                                        @if(auto.year > 0) {
+                                            <br/>
+                                            Year: @auto.year
+                                        }
+                                        @if(auto.mileage > 0) {
+                                            <br/>
+                                            @auto.mileage km
+                                        }
+                                        @if(auto.fuelType != null) {
+                                            <br/>
+                                            @auto.fuelType
+                                        }
+                                        @if(auto.transmission != null) {
+                                            <br/>
+                                            @auto.transmission
+                                        }
+                                        @if(auto.bodyType != null) {
+                                            <br/>
+                                            @auto.bodyType
+                                        }
+                                        @if(auto.drive != null) {
+                                            <br/>
+                                            @auto.drive
+                                        }
+                                        @if(auto.colorExterior != null) {
+                                            <br/>
+                                            @auto.colorExterior
+                                            @if(auto.colorInterior != null) {
+                                                / @auto.colorInterior
+                                            }
+                                        }
+                                    </td>
+                                    <td class="font-weight-semibold fs-16">@auto.toPrice</td>
+                                    <td>
+                                        @if(auto.published) {
+                                            <a data-href="@routes.AcAutoController.publish(auto.id)" href="javascript:void(0);" class="doHref btn btn-info">Published</a>
+                                        } else {
+                                            <span class="text-bg-warning">Pending</span>
+                                            <a data-href="@routes.AcAutoController.publish(auto.id)" href="javascript:void(0);" class="doHref btn btn-success">Publish Now</a>
+                                        }
+                                    <br/><br/>
+                                    <div style="display: flex;  justify-content: space-between;">
+                                        <a href="@routes.AcAutoController.edit(auto.id)" class="btn btn-success text-white" data-bs-toggle="tooltip" data-original-title="Edit"><i class="fa fa-pencil"></i> Edit</a>
+                                        <a href="@routes.AcAutoController.getPictures(auto.id)" class="btn btn-info text-white" data-bs-toggle="tooltip" data-original-title="Pictures"><i class="fa fa-upload"></i> Photos</a>
+
+                                        <a data-href="@routes.AcAutoController.trash(auto.id)" href="javascript:void(0)" class="doHref btn btn-danger text-white" data-bs-toggle="tooltip" data-original-title="Trash">
+                                        @if(!auto.trashed) {
+                                            <i class="fa fa-trash"></i>
+                                        } else {
+                                            <i class="fa fa-arrow-up"></i>
+                                        }
+                                        </a>
+
+                                        <a href="@routes.ListingController.listing(auto.getUrl)" target="_blank" class="btn btn-primary text-white" data-bs-toggle="tooltip" data-original-title="View"><i class="fa fa-eye"></i></a>
+                                    </div>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            @inc.pagination(pager, request)
+        </div>
+
+    </div>
+}
+
+@getParam(param: String) = @{
+    request.queryString(param).getOrElse("")
+}
+
+@styles = {
+    <link rel="stylesheet" href="@StaticAssets.getUrl("static/fancybox/jquery.fancybox.css")" type="text/css" media="screen" />
+    <style>
+        .img-thumb {
+            width: 100px;
+            height: 100px;
+        }
+        .hide {
+            display: none;
+        }
+        .pagination li {
+            padding: 0 5px;
+        }
+        .img-thumb {
+            width: auto;
+            max-height: 200px;
+            max-width: 300px;
+        }
+        @@media (max-width: 760px) {
+            .ctable tr {
+                margin-bottom: 30px;
+            }
+            .img-thumb {
+                width: auto;
+                height: auto;
+                max-height: 200px;
+            }
+
+        }
+    </style>
+}
+
+
+
+@scripts = {
+    <script src="@StaticAssets.getUrl("static/fancybox/jquery.fancybox.pack.js")"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            @for((auto, index) <- list.zipWithIndex) {
+                $(".@auto.getRef-fancybox").fancybox();
+            }
+
+            $("#filter-more-btn").on('click', function(){
+                $(this).toggleClass("shown");
+            });
+
+            $("#filter-more-btn").on('click', function(){
+                $(".listing-search .hide").slideToggle("show");
+            });
+
+            $('#localitySelect').SumoSelect({search: true, searchText: 'Search here.'});
+            $('#modelSelect').SumoSelect({search: true, searchText: 'Search here.'});
+        });
+    </script>
+}

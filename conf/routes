@@ -1,0 +1,203 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET         /startadmin                               controllers.AdLogin.startAdmin()
+GET         /request-account-deletion                 controllers.HomeController.requestAcctDeletion(request: Request)
+
+
+GET         /                                         controllers.HomeController.index(request: Request)
+GET         /about                                    controllers.HomeController.about(request: Request)
+GET         /contact                                  controllers.HomeController.contact(request: Request)
+GET         /terms                                    controllers.HomeController.terms(request: Request)
+GET         /policy                                   controllers.HomeController.policy(request: Request)
+
+GET         /sitemap-cars.xml                         controllers.SiteMapController.autos(request: Request)
+
+GET         /cars                                     controllers.ListingController.listing(path: String = "", request: Request)
+GET         /cars/*path                               controllers.ListingController.listing(path: String, request: Request)
+GET         /sellers                                  controllers.SellerController.index(request: Request)
+GET         /sellers/:username                        controllers.SellerController.single(username: String, request: Request)
+GET         /sellers-2                                controllers.ListingController.sellers(request: Request)
+GET         /sellers-2/:code                          controllers.ListingController.seller(code: String, request: Request)
+
+GET         /blog/:slug                               controllers.BlogController.single(slug: String, request: Request)
+POST        /blog/incView/:id                         controllers.BlogController.incViews(id: Long)
+GET         /blog                                     controllers.BlogController.posts(categorySlug: String="", request: Request)
+GET         /blog/category/:slug                      controllers.BlogController.posts(slug: String, request: Request)
+GET         /blog/tag/:slug                           controllers.BlogController.byTag(slug: String, request: Request)
+
++ nocsrf
+POST        /socialLogin                              controllers.LoginController.socialLogin(request: Request)
+
+GET         /login                                    controllers.LoginController.index(request: Request)
+POST        /login                                    controllers.LoginController.login(request: Request)
+GET         /logout                                   controllers.LoginController.logout()
+
+GET         /signup                                   controllers.RegisterController.index(request: Request)
+POST        /signup                                   controllers.RegisterController.submit(request: Request)
+
+GET         /verify-email/:guid                       controllers.RegisterController.verifyEmail(guid: String, request: Request)
+POST        /verify-email/:id                         controllers.RegisterController.sendVerifyEmail(id: Long, request: Request)
+
+
+GET         /reset-password                           controllers.PasswordResetController.forgotten(request: Request)
+POST        /reset-password                           controllers.PasswordResetController.submitForgotten(request: Request)
+GET         /reset-password/:guid                     controllers.PasswordResetController.reset(guid: String, request: Request)
+POST        /reset-password/:guid                     controllers.PasswordResetController.submitReset(guid: String, request: Request)
+
+
+GET         /indexAutosByIds                          controllers.ListingController.indexAutosByIds(request: Request)
+
+##########DASHBOARD ROUTES
+GET         /dashboard                                controllers.AcDashboardController.index(request: Request)
+
+GET         /post-ad                                  controllers.AcAutoController.add(request: Request)
+POST        /post-ad                                  controllers.AcAutoController.create(request: Request)
+POST        /upload-picture                           controllers.AcAutoController.uploadPicture(request: Request)
+
+GET         /auto-pictures/:id                        controllers.AcAutoController.getPictures(id: Long, request: Request)
+POST        /auto-pictures/:id                        controllers.AcAutoController.postPictures(id: Long, request: Request)
+POST        /delete-picture                           controllers.AcAutoController.deletePicture(request: Request)
+POST        /rotate-picture/:name/:angle              controllers.AcAutoController.rotate(name: String, angle: Double)
+
+GET         /dashboard/autos                          controllers.AcAutoController.index(request: Request)
+GET         /dashboard/autos/:id                      controllers.AcAutoController.single(id: Long, request: Request)
+GET         /dashboard/editAuto/:id                   controllers.AcAutoController.edit(id: Long, request: Request)
+POST        /dashboard/editAuto/:id                   controllers.AcAutoController.update(id: Long, request: Request)
+POST        /dashboard/deleteAuto/:id                 controllers.AcAutoController.delete(id: Long)
+POST        /dashboard/publishAuto/:id                controllers.AcAutoController.publish(id: Long, request: Request)
+POST        /dashboard/trashAuto/:id                  controllers.AcAutoController.trash(id: Long, request: Request)
+
+
+GET         /profile/settings                         controllers.AcProfileController.edit(request: Request)
+POST        /profile/settings                         controllers.AcProfileController.update(request: Request)
+POST        /profile/updatelogo                       controllers.AcProfileController.updateLogo(request: Request)
+
+
+
+##########API ROUTES
+GET         /api/listing                              controllers.ApiListingController.listing(request: Request)
+GET         /api/listingAggs                          controllers.ApiListingController.listingAggs(request: Request)
+GET         /api/listing/:id                          controllers.ApiListingController.single(id: Long, request: Request)
+
+GET         /api/fields                               controllers.ApiFieldsController.fields()
+
+GET         /api/makeModels                           controllers.ApiFieldsController.makeModels()
+GET         /api/stateLocalities                      controllers.ApiFieldsController.stateLocalities()
+
+POST        /api/login                                controllers.ApiAuthController.login(request: Request)
+POST        /api/register                             controllers.ApiAuthController.register(request: Request)
+
++ nocsrf
+POST        /api/getAccount                           controllers.ApiAcProfileController.getAccount(request: Request)
++ nocsrf
+POST        /api/editAccount                          controllers.ApiAcProfileController.editAccount(request: Request)
++ nocsrf
+POST        /api/changePassword                        controllers.ApiAcProfileController.changePassword(request: Request)
++ nocsrf
+POST        /api/updateLogo                            controllers.ApiAcProfileController.updateLogo(request: Request)
+
++ nocsrf
+POST        /api/postAd                               controllers.ApiAcAutoController.create(request: Request)
+GET         /api/autos                                controllers.ApiAcAutoController.index(request: Request)
+GET         /api/autos/:id                            controllers.ApiAcAutoController.single(id: Long, request: Request)
++ nocsrf
+POST        /api/editAuto/:id                         controllers.ApiAcAutoController.update(id: Long, request: Request)
++ nocsrf
+POST        /api/publishAuto/:id                      controllers.ApiAcAutoController.publish(id: Long, request: Request)
++ nocsrf
+POST        /api/trashAuto/:id                        controllers.ApiAcAutoController.trash(id: Long, request: Request)
++ nocsrf
+POST        /api/postPicture                          controllers.ApiAcAutoController.uploadPicture(request: Request)
++ nocsrf
+POST        /api/deletePicture/:id                    controllers.ApiAcAutoController.deletePicture(id: Long, request: Request)
++ nocsrf
+POST        /api/makePicturePrimary/:id               controllers.ApiAcAutoController.makePicturePrimary(id: Long, request: Request)
+
+
+##########ADMIN ROUTES
+GET         /admin/startup                            controllers.AdStartup.startup(request: Request)
+
+GET         /admin/ad-crawl                           controllers.AdCrawler.add(request: Request)
+POST        /admin/ad-crawl                           controllers.AdCrawler.create(request: Request)
+POST        /admin/ad-crawl-file                      controllers.AdCrawler.createFile(request: Request)
+
+GET         /admin/account/login                      controllers.LoginController.adminAcountLogin(request: Request)
+
+GET         /admin/login                              controllers.AdLogin.index(request: Request)
+POST        /admin/login                              controllers.AdLogin.login(request: Request)
+
+
+GET         /admin/autos                              controllers.AdAutoCrud.index(request: Request)
+GET         /autos/fetched                            controllers.AdAutoCrud.fetched(request: Request)
+GET         /admin/autos/:id                          controllers.AdAutoCrud.single(id: Long, request: Request)
+GET         /admin/addAuto                            controllers.AdAutoCrud.add(request: Request)
+POST        /admin/addAuto                            controllers.AdAutoCrud.create(request: Request)
+GET         /admin/editAuto/:id                       controllers.AdAutoCrud.edit(id: Long, request: Request)
+POST        /admin/editAuto/:id                       controllers.AdAutoCrud.update(id: Long, request: Request)
+POST        /admin/deleteAuto/:id                     controllers.AdAutoCrud.delete(id: Long)
+
+POST        /admin/boostAuto/:id                      controllers.AdAutoCrud.boost(id: Long)
+POST        /autos/doVisible/:id                      controllers.AdAutoCrud.visible(id: Long)
+
+POST        /admin/publishAuto/:id                    controllers.AdAutoCrud.publish(id: Long)
+POST        /admin/trashAuto/:id                      controllers.AdAutoCrud.trash(id: Long)
+
+POST        /admin/upload-picture                     controllers.AdAutoCrud.uploadPicture(request: Request)
+GET         /admin/auto-pictures/:id                  controllers.AdAutoCrud.getPictures(id: Long, request: Request)
+POST        /admin/auto-pictures/:id                  controllers.AdAutoCrud.postPictures(id: Long, request: Request)
+POST        /admin/delete-picture                     controllers.AdAutoCrud.deletePicture(request: Request)
+POST        /admin/delete-all-pictures/:id            controllers.AdAutoCrud.deleteAllPictures(id: Long, request: Request)
+POST        /admin/rotate-picture/:name/:angle        controllers.AdAutoCrud.rotate(name: String, angle: Double)
+
+GET         /admin/download-pictures/:id              controllers.AdAutoCrud.downloadPictures(id: Long, request: Request)
+
+GET         /admin/accounts                           controllers.AdAcctCrud.index(request: Request)
+POST        /admin/activateAccount/:id                controllers.AdAcctCrud.activate(id: Long)
+POST        /admin/deleteAccount/:id                  controllers.AdAcctCrud.delete(id: Long)
+
+
+GET         /admin/blogs                              controllers.AdBlog.index(request: Request)
+GET         /admin/blogs/:id                          controllers.AdBlog.single(id: Long, request: Request)
+GET         /admin/addBlog                            controllers.AdBlog.add(request: Request)
+POST        /admin/addBlog                            controllers.AdBlog.create(request: Request)
+GET         /admin/editBlog/:id                       controllers.AdBlog.edit(id: Long, request: Request)
+POST        /admin/editBlog/:id                       controllers.AdBlog.update(id: Long, request: Request)
+POST        /admin/deleteBlog/:id                     controllers.AdBlog.delete(id: Long)
+POST        /admin/uploadBlogImage                    controllers.AdBlog.uploadImage(request: Request)
+
+GET         /admin                                    controllers.AdAdmin.index(request: Request)
+GET         /admin/admins                             controllers.AdAdmin.admins(request: Request)
+GET         /admin/admins/:id                         controllers.AdAdmin.single(id: Long, request: Request)
+GET         /admin/createAdmin                        controllers.AdAdmin.add(request: Request)
+POST        /admin/createAdmin                        controllers.AdAdmin.create(request: Request)
+GET         /admin/editAdmin/:id                      controllers.AdAdmin.edit(id: Long, request: Request)
+POST        /admin/editAdmin/:id                      controllers.AdAdmin.update(id: Long, request: Request)
+POST        /admin/activateAdmin/:id                  controllers.AdAdmin.activate(id: Long)
+POST        /admin/deleteAdmin/:id                    controllers.AdAdmin.delete(id: Long)
+GET         /admin/editAdminRoles/:id                 controllers.AdAdmin.getRoles(id: Long, request: Request)
+POST        /admin/editAdminRoles/:id                 controllers.AdAdmin.setRoles(id: Long, request: Request)
+POST        /admin/addAdminRole                       controllers.AdAdmin.addRole(request: Request)
+POST        /admin/editAdminRole                      controllers.AdAdmin.editRole(request: Request)
+GET         /admin/editRolePerms/:id                  controllers.AdAdmin.getPerms(id: Long, request: Request)
+POST        /admin/editRolePerms/:id                  controllers.AdAdmin.setPerms(id: Long, request: Request)
+
+GET         /admin/models                             controllers.AdForms.index(request: Request)
+POST        /admin/models/add                         controllers.AdForms.add(request: Request)
+POST        /admin/models/edit                        controllers.AdForms.edit(request: Request)
+POST        /admin/models/hide/:id/:model             controllers.AdForms.hide(id: Long, model: String)
+POST        /admin/models/delete/:id/:model           controllers.AdForms.delete(id: Long, model: String)
+GET         /admin/models/children/:id/:model         controllers.AdForms.getChildren(id: Long, model: String, request: Request)
+POST        /admin/models/children/:id/:model         controllers.AdForms.postChildren(id: Long, model: String, request: Request)
+
+GET         /logo.png                                 controllers.Assets.at(path="/public", file="logo.png")
+GET         /robots.txt                               controllers.Assets.at(path="/public", file="robots.txt")
+GET         /sitemap.xml                              controllers.Assets.at(path="/public", file="sitemap.xml")
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                             controllers.Assets.versioned(path="/public", file: Asset)
+#GET         /*file                                   controllers.Assets.versioned(path="/public", file: Asset)
+
+GET         /*path/                                   controllers.HomeController.unTrail(path: String)
+

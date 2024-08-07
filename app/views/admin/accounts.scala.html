@@ -1,0 +1,210 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@import play.mvc.Http;
+@path = @{request.path()}
+
+@list = @{map.get("accounts").asInstanceOf[java.util.List[Account]]}
+@total = @{map.get("total").asInstanceOf[Long]}
+@param = @{map.get("param").asInstanceOf[pojos.Param]}
+@pager = @{new pojos.Pager(total, param.getPage, param.getSize)}
+
+@admin.layout("Accounts", scripts=scripts, styles=styles, request=request) {
+    <div id="admin-accounts">
+        <div class="card card-normal">
+            <div class="card-header">
+                <h5 class="float-start">Accounts: @Html(pager.getDisplayXtoYofZ)</h5>
+            </div>
+            <div class="card-body">
+                <form action="@path" id="findForm">
+                    <div class="row">
+                        <div class="form-group col-4">
+                            <input type="text" name="search" value="@request.queryString("search").getOrElse("")" class="form-control" placeholder="Search">
+                        </div>
+                        <div class="form-group col-2">
+                            <select name="active" class="form-select">
+                                <option value="">-Active-</option>
+                                <option value="true" @if(request.queryString("active").getOrElse("").equals("true")){selected}>Yes</option>
+                                <option value="false" @if(request.queryString("active").getOrElse("").equals("false")){selected}>No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <select name="state" class="form-select">
+                                <option value="">All States</option>
+                                @for((id,name) <- USelect.selectStates(1)) {
+                                    <option value="@id" @if(id.equals(getParam("state"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <select name="locality" class="form-select" id="localitySelect">
+                                <option value="">All Localities</option>
+                                @for((state, localities) <- USelect.getStateLocalities(1)) {
+                                    <optgroup label="@state">
+                                    @for((id, locality) <- localities) {
+                                        <option value="@id" @if(id.equals(getParam("locality"))) {selected}>@locality</option>
+                                    }
+                                    </optgroup>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group col-2">
+                            <button class="btn btn-info" type="submit">Go!</button>
+                        </div>
+                        <div class="form-group col-2">
+                            <br/>
+                            <button class="btn btn-link" type="button" id="resetBtn">Reset!</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered ctable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Logo</th>
+                        <th>Information</th>
+                        <th>Others</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                @for(account <- list) {
+                    <tr>
+                        <td>
+                            <label class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" name="checkbox" value="checkbox" /> <span class="custom-control-label"></span> </label>
+                        </td>
+                        <td>
+                            <div class="media mt-0 mb-0">
+                                <div class="card-aside-img">
+                                    <img src="@account.image()" class="img-thumb">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span>@account.businessName</span>
+                            <br/>
+                            @account.phone / @account.whatsapp
+                            <br/>
+                            @account.email
+                            <br/>
+                            @account.firstName @account.lastName
+                        </td>
+                        <td>
+                            @if(account.locality != null) {
+                                @account.locality / @account.locality.parent
+                            }
+                            <br/><br/>
+                            <a href="@routes.AdAutoCrud.index()?account=@account.id" class="btn btn-info btn-sm">Listings (@account.countListings())</a>
+                        </td>
+                        <td>
+                            @if(account.active) {
+                                <button data-href="@routes.AdAcctCrud.activate(account.id)" href="javascript:void(0);" class="doHref btn btn-sm btn-success">Active</button>
+                            } else {
+                                <button data-href="@routes.AdAcctCrud.activate(account.id)" href="javascript:void(0);" class="doHref btn btn-sm btn-danger">Not Active</button>
+                            }
+                            <br/><br/>
+                            <a target="_blank" href="@routes.LoginController.adminAcountLogin()?e_crd=@LoginController.marshall(account)" class="btn btn-primary text-white" data-bs-toggle="tooltip" data-original-title="View"><i class="fa fa-eye"></i></a>
+                            <a target="_blank" href="@routes.SellerController.single(account.username)" class="btn btn-secondary text-white" data-bs-toggle="tooltip" data-original-title="Public"><i class="fa fa-spider-web"></i></a>
+                        <a data-href="@routes.AdAcctCrud.delete(account.id)" href="javascript:void(0);" class="doHref btn btn-danger text-white" data-bs-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash"></i></a>
+
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+
+        <ul class="pagination justify-content-center">
+
+            @if(pager.hasPrev) {
+                <li>
+                    <a class="previous" href="@UriUtil.getPagedUrl(request.uri, pager.getPage - 1)">
+                        <i class="ion-ios-arrow-back"></i> <span>Previous</span>
+                    </a>
+                </li>
+            }
+
+            @for(head <- pager.getList.headOption){
+                @if(head>1) {
+                    <li>
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+            @for(page <- pager.getList) {
+                @if(page == (pager.getPage + 1)){
+                    <li><a class="active" href="#">@page</a></li>
+                } else {
+                    <li><a alt="@page account page" href="@UriUtil.getPagedUrl(request.uri, page - 1)">@page</a></li>
+                }
+            }
+
+            @for(last <- pager.getList.lastOption){
+                @if(last < pager.getTotalPages) {
+                    <li>
+                        <a href="#">...</a>
+                    </li>
+                }
+            }
+
+            @if(pager.hasNext) {
+                <li>
+                    <a class="next" href="@UriUtil.getPagedUrl(request.uri, pager.getPage + 1)">
+                        <span>Next</span> <i class="ion-ios-arrow-forward"></i>
+                    </a>
+                </li>
+            }
+        </ul>
+
+    </div>
+}
+
+
+@getParam(param: String) = @{
+    request.queryString(param).getOrElse("")
+}
+
+@styles = {
+    <style>
+        .img-thumb {
+            width: 100px;
+            height: 100px;
+        }
+        .hide {
+            display: none;
+        }
+        .pagination li {
+            padding: 0 5px;
+        }
+    </style>
+}
+
+@scripts = {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#resetBtn").click(function(){
+                $("#findForm").find("select").val("");
+                $(':input','#findForm')
+                        .not(':button, :submit, :reset, :hidden')
+                        .val("")
+                        .prop('checked', false)
+                        .prop('selected', false);
+            });
+
+            @if(request.flash().get("message").isPresent) {
+                @if(Util.isNotEmpty(request.flash().get("message").get())) {
+                    $("#info-box").html("@request.flash().get("message").get()");
+                    $('#info-modal').modal('show');
+                }
+            }
+
+            $('#localitySelect').SumoSelect({search: true, searchText: 'Search here.'});
+        });
+    </script>
+}

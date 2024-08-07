@@ -1,0 +1,185 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@res = @{map.get("res").asInstanceOf[search.SearchRes]}
+@sellers = @{res.resultsAccounts.getList}
+@total = @{res.resultsAccounts.getTotalRowCount}
+
+@param = @{map.get("param").asInstanceOf[pojos.Param]}
+@pager = @{new pojos.Pager(total, param.getPage, param.getSize)}
+
+@main.layout("Cars / Motor Vehicles sellers and dealers in Nigeria", request=request, meta=meta, scripts=scripts, styles=styles) {
+    <div class="page-breadcrumb-area">
+        <div class="container">
+            <div class="row">
+                <div class="page-breadcrumb">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="@routes.HomeController.index()">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@routes.SellerController.index()">Page</a></li>
+                        <li class="breadcrumb-item active">Seller List</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="seller-list-page mb-150">
+        <div class="container">
+
+            <form action="@routes.SellerController.index()" id="findSellerForm">
+                <div class="search-field">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="single-field">
+                                <label class="field-label">Locality</label>
+                                <select name="locality" class="form-select optgroup_test">
+                                    <option value="">All Localities</option>
+                                    @for((state, localities) <- USelect.getStateLocalities(2)) {
+                                        <optgroup label="@state">
+                                        @for((slug, locality) <- localities) {
+                                            <option value="@slug">@locality</option>
+                                        }
+                                        </optgroup>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="single-field">
+                                <label class="field-label">Keyword</label>
+                                <input name="search" type="text" placeholder="Name / Phone etc" />
+                            </div>
+                        </div>
+                        <div class="col-md-2 search-btn">
+                            <button class="main-btn d-block">Search</button>
+                        </div>
+                        <div class="col-md-2 search-btn">
+                            <button type="button" class="field-reset btn btn-link" id="resetBtn">Reset All</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="dealer-list-content">
+
+                <h1 class="title">Cars / Motor Vehicles sellers and dealers in Nigeria</h1>
+
+                <div class="dealer-top d-flex flex-wrap align-items-center justify-content-between">
+                    <div class="dealer-top-left">
+                        <p><span>@total</span> Sellers found</p>
+                    </div>
+                    <div class="dealer-top-right">
+                        <div class="dealer-select">
+                            <form action="#">
+                                <select class="optgroup_test">
+                                    <option value="" selected="selected">SORT BY: Date Last Added </option>
+                                    <option value="">SORT BY: Date First Added </option>
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dealer-list-items row">
+                    @for(seller <- sellers) {
+                        <div class="single-dealer col-lg-6">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="dealer-author">
+                                        <div class="author-image">
+                                            <a href="@routes.SellerController.single(seller.username)">
+                                                <img src="@seller.image()" alt="@seller.businessName">
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-9">
+                                    <div class="dealer-info">
+
+                                        <div class="author-content">
+                                            <h4 class="author-name"><a href="@routes.SellerController.single(seller.username)">@seller.businessName</a></h4>
+                                            @*
+                                            <div class="author-rating">
+                                            <ul class="rating-star">
+                                            <li class="rating-on"><i class="ion-android-star"></i></li>
+                                            <li class="rating-on"><i class="ion-android-star"></i></li>
+                                            <li class="rating-on"><i class="ion-android-star"></i></li>
+                                            <li class="rating-on"><i class="ion-android-star"></i></li>
+                                            <li><i class="ion-android-star"></i></li>
+                                            </ul>
+                                            <span>(24 Rating)</span>
+                                            </div>*@
+                                        </div>
+                                        <div class="dealer-info-wrapper d-flex flex-wrap">
+                                            <div class="info-left">
+                                                <ul class="info">
+                                                    @*<li><i class="ion-model-s"></i><a href="@routes.SellerController.single(seller.username)"><span>0</span> Items</a></li>*@
+                                                    <li><i class="ion-android-pin"></i><span>@seller.locality</span></li>
+                                                    @*<li><a class="location" href="#">Find on Google Map</a></li>*@
+                                                </ul>
+                                            </div>
+                                            <div class="info-right">
+                                                @*<p>@Html(seller.about)</p>*@
+                                            </div>
+                                        </div>
+                                        <div class="dealer-info-phone">
+                                            <ul>
+                                                <li><a href="tel:@seller.phone">@seller.phone</a></li>
+                                                @*<li>Used Car: <a href="tel:08695628628">(086) 95 628 628</a></li>*@
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+                @inc.pagination(pager, request)
+            </div>
+        </div>
+    </section>
+}
+
+@meta = {
+    <meta name="description" content="Cars / Motor Vehicles sellers and dealers in Nigeria. Used cars for sale. New cars For sale. Buy from trusted sellers on Carloaded.com." />
+}
+
+@styles = {
+    <style>
+        .search-field {
+            width: 100%;
+            padding: 0;
+        }
+        h1.title {
+            font-size: 20px;
+        }
+        .search-field .single-field {
+            padding: 0;
+        }
+        .search-btn .main-btn {
+            height: 56px;
+        }
+        .single-dealer {
+            border: 1px solid #f5f6f6;
+        }
+        .author-name > a {
+            color: #293957 !important;
+        }
+    </style>
+}
+
+@scripts = {
+    <script>
+        $(document).ready(function() {
+            $("#resetBtn").click(function(){
+                $("#findSellerForm").find("select").val("");
+                $(':input','#findSellerForm')
+                        .not(':button, :submit, :reset, :hidden')
+                        .val("")
+                        .prop('checked', false)
+                        .prop('selected', false);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,336 @@
+@(request: Http.Request)
+
+@main.layout("About us", request=request) {
+    <section class="about-banner-area d-flex align-items-center bg_cover" style="background-image: url(@StaticAssets.getUrl("static/images/about-banner.jpg"));">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-sm-9">
+                    <div class="about-banner-content">
+                        <span class="sub-title">welcome to</span>
+                        <h2 class="main-title">Carloaded Portal</h2>
+                        <p>A leading digital automotive marketplace that <br> connects car shoppers with sellers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @*
+    <section class="choose-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="section-title">
+                        <h2 class="title">Why use us</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="choose-wrapper pt-20">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="single-choose d-md-flex">
+                            <div class="choose-icon">
+                                <i class="ion ion-social-usd"></i>
+                                <span class="number">1</span>
+                            </div>
+                            <div class="choose-content flex-shrink-1">
+                                <h4 class="title">best cars from many dealership</h4>
+                                <p>Nigerian used and foreign used tokunbo cars at your disposal. Contact sellers directly. Free car industry report. Browse through thousand of cars</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="single-choose d-md-flex">
+                            <div class="choose-icon">
+                                <i class="ion ion-calculator"></i>
+                                <span class="number">2</span>
+                            </div>
+                            <div class="choose-content flex-shrink-1">
+                                <h4 class="title">EASY ONLINE FINANCING CALCULATOR</h4>
+                                <p>Easy online financing calculate in a few minutes. Our 12+ financing partners will compete to get you a highly competitive rate​</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="single-choose d-md-flex">
+                            <div class="choose-icon">
+                                <i class="ion ion-model-s"></i>
+                                <span class="number">3</span>
+                            </div>
+                            <div class="choose-content flex-shrink-1">
+                                <h4 class="title">FAST AND ACCURATE CAR INFORMATION</h4>
+                                <p>Contact Sellers. Buy your car or truck. Search thousand of cars from the convenient of your mobile phone.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    *@
+
+        <!--====== Choose Ends ======-->
+
+        <!--====== Dealership Start ======-->
+
+    <section class="dealership-area" style="background-image: url(@StaticAssets.getUrl("static/images/fact-4-min.jpg"));">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="dealership-content">
+                        <h4 class="sub-title">Carloaded Portal</h4>
+                        <h2 class="main-title">Automotive <br> marketplace</h2>
+                        <p>
+                            Carloaded is a leading digital automotive marketplace that connects car shoppers with sellers. Headquartered in Lekki, the company empowers shoppers with the data, resources and digital tools needed
+                            to make informed buying decisions and seamlessly connect with automotive retailers.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="dealership-counter d-flex justify-content-around">
+                        <div class="dealership-counter-items">
+                            <div class="single-counter-item">
+                                <span class="count">50000+</span>
+                                <p>vehicles available right now</p>
+                            </div>
+                            <div class="single-counter-item">
+                                <span class="count">400+</span>
+                                <p>CAR MAKES AND MODELS</p>
+                            </div>
+                        </div>
+                        <div class="dealership-counter-items">
+                            <div class="single-counter-item">
+                                <span class="count">1000+</span>
+                                <p>HAPPY SELLERS</p>
+                            </div>
+                            <div class="single-counter-item">
+                                <span class="count">100k+</span>
+                                <p>VISITS</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!--====== Dealership Ends ======-->
+
+        <!--====== Testimonial Brand 2 Start ======-->
+
+    <section class="testimonial-brand-area-2">
+        <div class="testimonial-area">
+            <div class="container position-relative">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="section-title">
+                            <h2 class="title">the trust from our clients</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-wrapper">
+                    <div class="testimonial-content-active">
+                        <div class="single-testimonial-content">
+                            <div class="title-rating d-flex align-items-center">
+                                <h3 class="testimonial-title">Excellent</h3>
+                                <ul class="testimonial-rating d-flex">
+                                    <li class="rating-on"><i class="ion-ios-star"></i></li>
+                                    <li class="rating-on"><i class="ion-ios-star"></i></li>
+                                    <li class="rating-on"><i class="ion-ios-star"></i></li>
+                                    <li class="rating-on"><i class="ion-ios-star"></i></li>
+                                    <li class="rating-on"><i class="ion-ios-star"></i></li>
+                                </ul>
+                            </div>
+                            <p>The website makes car-buying haggle-free, with prices below market value, so customers can rest easy knowing they aren't getting ripped off. Because it does not spend hours selling to customers, maintaining a brick-and-mortar
+                                stores, or paying commissions, Carloaded can run more efficiently than a traditional dealership.</p>
+                        </div>
+                    </div>
+
+                    @*<div class="testimonial-author-active">
+                        <div class="single-testimonial-author d-flex align-items-center">
+                            <div class="author-image">
+                                <img src="@StaticAssets.getUrl("static/images/author-1.jpg")" alt="">
+                            </div>
+                            <div class="author-content media-body">
+                                <h4 class="author-name">ROBERT DOWNER</h4>
+                                <div class="designation">Creative Director at <a href="#">Envato LLC</a> </div>
+                            </div>
+                        </div>
+                        <div class="single-testimonial-author d-flex align-items-center">
+                            <div class="author-image">
+                                <img src="@StaticAssets.getUrl("static/images/author-2.jpg")" alt="">
+                            </div>
+                            <div class="author-content media-body">
+                                <h4 class="author-name">ROBERT DOWNER</h4>
+                                <div class="designation">Creative Director at <a href="#">Envato LLC</a> </div>
+                            </div>
+                        </div>
+                        <div class="single-testimonial-author d-flex align-items-center">
+                            <div class="author-image">
+                                <img src="@StaticAssets.getUrl("static/images/author-3.jpg")" alt="">
+                            </div>
+                            <div class="author-content media-body">
+                                <h4 class="author-name">ROBERT DOWNER</h4>
+                                <div class="designation">Creative Director at <a href="#">Envato LLC</a> </div>
+                            </div>
+                        </div>
+                        <div class="single-testimonial-author d-flex align-items-center">
+                            <div class="author-image">
+                                <img src="@StaticAssets.getUrl("static/images/author-2.jpg")" alt="">
+                            </div>
+                            <div class="author-content media-body">
+                                <h4 class="author-name">ROBERT DOWNER</h4>
+                                <div class="designation">Creative Director at <a href="#">Envato LLC</a> </div>
+                            </div>
+                        </div>
+                    </div>*@
+                </div>
+                @*<div class="testimonial-more">
+                    <a class="more" href="#">see all reviews <i class="ion-ios-arrow-right"></i></a>
+                </div>*@
+            </div>
+        </div>
+    </section>
+
+
+    @*<section class="team-area-2">
+        <div class="container">
+            <div class="team-wrapper">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="section-title">
+                            <h2 class="title">meet our team</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="row team-active">
+                    <div class="col-lg-3 team-col">
+                        <div class="single-team">
+                            <div class="team-image">
+                                <img src="@StaticAssets.getUrl("static/images/team-1.jpg")" alt="">
+
+                                <div class="team-hover">
+                                    <ul class="team-meta">
+                                        <li><i class="ion-gear-a"></i> Experiences: <strong>15 Years</strong></li>
+                                        <li><i class="ion-ribbon-b"></i> Certified: <strong>ASE, AC</strong></li>
+                                        <li><i class="ion-android-mail"></i> Email: <strong><a href="#">silva.crf@@gmail.com</a></strong></li>
+                                        <li><i class="ion-android-phone-portrait"></i> Phone: <strong><a href="#"> +88 543 65 7809</a></strong></li>
+                                    </ul>
+                                    <ul class="team-social">
+                                        <li><a href="#"><i class="ion-social-twitter"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-facebook"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-instagram-outline"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="team-content">
+                                <h5 class="name"><a href="#">Alexander Arnold</a></h5>
+                                <span class="designation">Senior Mechanic</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 team-col">
+                        <div class="single-team">
+                            <div class="team-image">
+                                <img src="@StaticAssets.getUrl("static/images/team-2.jpg")" alt="">
+
+                                <div class="team-hover">
+                                    <ul class="team-meta">
+                                        <li><i class="ion-gear-a"></i> Experiences: <strong>15 Years</strong></li>
+                                        <li><i class="ion-ribbon-b"></i> Certified: <strong>ASE, AC</strong></li>
+                                        <li><i class="ion-android-mail"></i> Email: <strong><a href="#">silva.crf@@gmail.com</a></strong></li>
+                                        <li><i class="ion-android-phone-portrait"></i> Phone: <strong><a href="#"> +88 543 65 7809</a></strong></li>
+                                    </ul>
+                                    <ul class="team-social">
+                                        <li><a href="#"><i class="ion-social-twitter"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-facebook"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-instagram-outline"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="team-content">
+                                <h5 class="name"><a href="#">Fesnandor Silva</a></h5>
+                                <span class="designation">Master Automotive Technician</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 team-col">
+                        <div class="single-team">
+                            <div class="team-image">
+                                <img src="@StaticAssets.getUrl("static/images/team-3.jpg")" alt="">
+
+                                <div class="team-hover">
+                                    <ul class="team-meta">
+                                        <li><i class="ion-gear-a"></i> Experiences: <strong>15 Years</strong></li>
+                                        <li><i class="ion-ribbon-b"></i> Certified: <strong>ASE, AC</strong></li>
+                                        <li><i class="ion-android-mail"></i> Email: <strong><a href="#">silva.crf@@gmail.com</a></strong></li>
+                                        <li><i class="ion-android-phone-portrait"></i> Phone: <strong><a href="#"> +88 543 65 7809</a></strong></li>
+                                    </ul>
+                                    <ul class="team-social">
+                                        <li><a href="#"><i class="ion-social-twitter"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-facebook"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-instagram-outline"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="team-content">
+                                <h5 class="name"><a href="#">Sadio Mane</a></h5>
+                                <span class="designation">Mechanic</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 team-col">
+                        <div class="single-team">
+                            <div class="team-image">
+                                <img src="@StaticAssets.getUrl("static/images/team-4.jpg")" alt="">
+
+                                <div class="team-hover">
+                                    <ul class="team-meta">
+                                        <li><i class="ion-gear-a"></i> Experiences: <strong>15 Years</strong></li>
+                                        <li><i class="ion-ribbon-b"></i> Certified: <strong>ASE, AC</strong></li>
+                                        <li><i class="ion-android-mail"></i> Email: <strong><a href="#">silva.crf@@gmail.com</a></strong></li>
+                                        <li><i class="ion-android-phone-portrait"></i> Phone: <strong><a href="#"> +88 543 65 7809</a></strong></li>
+                                    </ul>
+                                    <ul class="team-social">
+                                        <li><a href="#"><i class="ion-social-twitter"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-facebook"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-instagram-outline"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="team-content">
+                                <h5 class="name"><a href="#">Edison Cavani</a></h5>
+                                <span class="designation">Mechanic</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 team-col">
+                        <div class="single-team">
+                            <div class="team-image">
+                                <img src="@StaticAssets.getUrl("static/images/team-5.jpg")" alt="">
+
+                                <div class="team-hover">
+                                    <ul class="team-meta">
+                                        <li><i class="ion-gear-a"></i> Experiences: <strong>15 Years</strong></li>
+                                        <li><i class="ion-ribbon-b"></i> Certified: <strong>ASE, AC</strong></li>
+                                        <li><i class="ion-android-mail"></i> Email: <strong><a href="#">silva.crf@@gmail.com</a></strong></li>
+                                        <li><i class="ion-android-phone-portrait"></i> Phone: <strong><a href="#"> +88 543 65 7809</a></strong></li>
+                                    </ul>
+                                    <ul class="team-social">
+                                        <li><a href="#"><i class="ion-social-twitter"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-facebook"></i></a></li>
+                                        <li><a href="#"><i class="ion-social-instagram-outline"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="team-content">
+                                <h5 class="name"><a href="#">Fesnandor Silva</a></h5>
+                                <span class="designation">Senior Mechanic</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>*@
+}

@@ -1,0 +1,160 @@
+@(title: String, meta: Html = Html(""), styles: Html = Html(""), scripts: Html = Html(""), request: Http.Request)(content: Html)
+
+@master(title + " - Admin", meta, master_styles=master_styles, master_scripts=master_scripts, request) {
+
+    <div id="ajaxWait">
+        <div class="d-flex justify-content-center" id="ajaxSpinner">
+            <div class="spinner-border text-info" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-menu d-none d-lg-block">
+        <div class="container">
+            <div class="header-menu-inner d-flex align-items-center justify-content-between">
+                @main_nav()
+
+                <div class="header-social-compare-login d-flex align-items-center">
+                    <div class="header-compare-login">
+                        <ul class="compare-login">
+                            <li>
+                                <a href="@routes.HomeController.index()" target="_blank">
+                                    <i class="ion-ios-loop-strong"></i>
+                                    <span class="d-none d-lg-block">Main</span>
+                                </a>
+                            </li>
+                            <li><a href="@routes.LoginController.logout()"><i class="ion-ios-contact-outline"></i> <span class="d-none d-lg-block">Log out</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-mobile-menu d-lg-none">
+        <div class="container">
+            <div class="header-mobile-wrapper d-flex justify-content-between align-items-center">
+                <div class="header-mobile-meta">
+                    <ul class="meta d-flex">
+                        <li><a class="toggle-bar navbar-mobile-open" href="javascript:void(0);"><i class="ion-navicon"></i></a></li>
+                        <li>
+                            <a href="@routes.HomeController.index()" target="_blank">
+                                <i class="ion-ios-loop-strong"></i>
+                            </a>
+                        </li>
+                        <li><a href="@routes.LoginController.logout()"><i class="ion-ios-contact-outline"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-navigation">
+            <a href="javascript:void(0);" class="close-navbar-mobile"><i class="fal fa-times"></i></a>
+            @main_nav()
+        </div>
+
+    </div>
+
+    <div class="container">
+        <div class="mt-50 mb-100">
+            @content
+        </div>
+    </div>
+}
+
+@main_nav() = {
+    <nav class="site-navigation">
+        <ul class="main-menu">
+            @if(Auth.hasPerm(AdminPermission.MANAGE_ACCOUNTS, request)) {
+                <li><a href="@routes.AdAdmin.index()">Admin</a></li>
+                <li>
+                    <a href="#">Inventory</a>
+                    <ul class="sub-menu">
+                        <li><a href="@routes.AdAutoCrud.index()">List</a></li>
+                        <li><a href="@routes.AdAutoCrud.fetched()">Fetched</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#">Accounts</a>
+                    <ul class="sub-menu">
+                        <li><a href="@routes.AdAcctCrud.index()">List</a></li>
+                    </ul>
+                </li>
+            }
+
+            @if(Auth.hasPerm(AdminPermission.MANAGE_ACCOUNTS, request)) {
+                <li>
+                    <a href="#">Subscription</a>
+                    <ul class="sub-menu">
+                        <li><a href="#">#</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">Messages</a></li>
+            }
+            @if(Auth.hasPerm(AdminPermission.MANAGE_BLOG, request)) {
+                <li><a href="@routes.AdBlog.index()">Blog</a></li>
+            }
+
+            @if(Auth.hasPerm(AdminPermission.SUPER, request)) {
+                <li>
+                    <a href="#">Misc</a>
+                    <ul class="sub-menu">
+                        @if(Auth.hasPerm(AdminPermission.MANAGE_SETTINGS, request)) {
+                            <li><a href="@routes.AdForms.index()">Elements</a></li>
+                        }
+                        @if(Auth.hasPerm(AdminPermission.MANAGE_ADMINS, request)) {
+                            <li><a href="@routes.AdAdmin.admins()">Admins</a></li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+
+
+@master_styles = {
+    <link rel="stylesheet" href="@StaticAssets.getUrl("static/css/dash.css")">
+
+    <style>
+        .clear {
+            clear: both !important;
+        }
+        #ajaxWait {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: grey;
+            opacity: .5;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1100;
+            overflow-x: hidden;
+            overflow-y: auto;
+            outline: 0;
+            transition: opacity .15s
+        }
+        #ajaxSpinner {
+            margin-top: 100px;
+            opacity: 1;
+            font-size: 100px;
+        }
+    </style>
+
+    @styles
+}
+
+@master_scripts = {
+    <script type="text/javascript">
+        $(document).ready(function(){
+            @if(request.flash().get("flashed").isPresent) {
+                Show("Alert:", "@Util.sanitizeHtml(request.flash().get("flashed").get())", "Close", function () {});
+            }
+        });
+    </script>
+
+    @scripts
+}

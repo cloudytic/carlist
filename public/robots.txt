@@ -1,0 +1,19 @@
+User-agent: *
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /blog/listings
+Disallow: /blog/listings/*
+Disallow: /product
+Disallow: /product/*
+Disallow: /listings
+Disallow: /sellers-2
+Disallow: /modern-inventory
+Disallow: /inventory
+Disallow: /wp-admin
+
+Disallow: /*sort=*
+Disallow: /*order=*
+Disallow: /*limit=*
+
+Disallow: /*add-to-cart=*
+Disallow: /*lastUrl=*

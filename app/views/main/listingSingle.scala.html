@@ -1,0 +1,83 @@
+@(auto: Auto)
+
+<div class="col-md-4 col-sm-6">
+    <div class="single-car-item-2 mt-5">
+        <div class="car-image">
+            <a href="@routes.ListingController.listing(auto.getUrl)">
+                @if(auto.getPictures.size() > 0) {
+                    <img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="@StaticAssets.getImg(auto.getPictures.get(0).getUrl("large"))" alt="@auto.caption">
+                } else {
+                    <img src="@StaticAssets.getUrl("image_not_available.png")" alt="@auto.caption" title="@auto.caption"/>
+                }
+            </a>
+            @*<ul class="car-meta">
+                <li>
+                    <button type="button">
+                        <i class="ion-ios-loop-strong"></i>
+                        <span class="car-tooltip compare">Add To Compare </span>
+                    </button>
+                </li>
+                <li>
+                    <button type="button">
+                        <i class="ion-arrow-expand"></i>
+                        <span class="car-tooltip View">Click To View</span>
+                    </button>
+                </li>
+                <li>
+                    <button type="button">
+                        <i class="ion-android-favorite-outline"></i>
+                        <span class="car-tooltip favourite">Add To Favourite</span>
+                    </button>
+                </li>
+            </ul>*@
+            @*<span class="status special"><i class="ion-android-time"></i> Boosted</span>*@
+        </div>
+        <div class="car-content">
+            <span class="price">
+                <span class="sale-price">
+                    <strong content="NGN">₦</strong>
+                    @auto.planPrice()
+                </span>
+                @*
+                <span class="regular-price">$28,500</span>
+                <span class="discount-percentage">Save 35%</span>
+                *@
+            </span>
+            <h4 class="car-title"><a href="@routes.ListingController.listing(auto.getUrl)">@auto.caption </a></h4>
+            @if(auto.condition != null) {
+                <div class="author-meta">@auto.condition</div>
+            }
+            <div class="author-meta">@auto.address()</div>
+
+            <div class="author-meta">
+                <span>
+                    @if(auto.contact != null) {
+                        <i class="ion-android-person"></i>
+                        Seller:  <a href="@routes.ListingController.listing(auto.getUrl)">@auto.contact</a>
+                        @if(Util.isNotEmpty(auto.contact.phone)) {
+                            <i class="ion-android-call"></i>
+                            <a href="tel:@auto.contact.phone">@auto.contact.phone</a>
+                        }
+                    }
+                    @if(auto.account != null) {
+                        <i class="ion-android-person"></i>
+                        Seller:  <a href="@routes.SellerController.single(auto.account.username)">@auto.account</a>
+                        @if(Util.isNotEmpty(auto.account.phone)) {
+                            <i class="ion-android-call"></i>
+                            <a href="tel:@auto.account.phone">@auto.account.phone</a>
+                        }
+                    }
+                </span>
+            </div>
+
+            <span class="small">@auto.showDate()</span>
+            <ul class="car-meta">
+                @if(auto.transmission != null) {
+                    <li><a href="@routes.ListingController.listing("")?transmission=@auto.transmission.slug">@auto.transmission</a></li>
+                }
+                <li><a href="@routes.ListingController.listing(auto.model.parent.slug)">@auto.model.parent</a></li>
+                <li><a href="@routes.ListingController.listing(auto.model.parent.slug+"/"+auto.model.slug)">@auto.model</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

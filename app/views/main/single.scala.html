@@ -1,0 +1,608 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@auto = @{map.get("auto").asInstanceOf[Auto]}
+@display = @{map.get("display").asInstanceOf[utilities.Display]}
+@similar = @{map.get("similar").asInstanceOf[List[Auto]]}
+
+@main.layout(auto.getH1, styles=styles, scripts=scripts, meta=meta, request=request) {
+    <section class="inventory-single-area">
+        <div class="container">
+            <div class="inventory-single-content ">
+                <ul class="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
+                    <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                        <a href="@routes.HomeController.index()"
+                        itemtype="http://schema.org/Thing" itemprop="item" alt="Used cars for sale in Nigeria">
+                            <span itemprop="name">Home</span>
+                        </a>
+                        <meta itemprop="position" content="1" />
+                    </li>
+                    <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                        <a href="@routes.ListingController.listing(auto.model.parent.slug+"/"+auto.model.slug)"
+                        itemtype="http://schema.org/Thing" itemprop="item" alt="@auto.model.parent @auto.model">
+                            <span itemprop="name"> @auto.model.parent @auto.model</span>
+                        </a>
+                        <meta itemprop="position" content="2" />
+                    </li>
+                    <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                        <a href="@routes.ListingController.listing(auto.model.parent.slug+"/"+auto.model.slug+"/in/"+auto.locality.parent.slug++"/"+auto.locality.slug)"
+                        itemtype="http://schema.org/Thing" itemprop="item" alt="@auto.model.parent @auto.model in @auto.address()">
+                            <span itemprop="name">@auto.model.parent @auto.model in @auto.address()</span>
+                        </a>
+                        <meta itemprop="position" content="3" />
+                    </li>
+                    @*<li class="breadcrumb-item active">@auto.caption</li>*@
+                </ul>
+
+                <h1 class="title">@auto.getH1</h1>
+
+
+                <div class="listing-social d-lg-flex justify-content-between">
+                    <div class="listing-btn">
+                        <ul class="listing-actions">
+                            @if(auto.year != null) {
+                                <li><a href="@routes.ListingController.listing("")?year=@auto.year"><i class="ion-ios-time"></i>  Year: @auto.year</a></li>
+                            }
+                            @if(auto.condition != null) {
+                                <li><a href="@routes.ListingController.listing("")?condition=@auto.condition.slug"><i class="ion-checkmark"></i>  @auto.condition</a></li>
+                            }
+                            @if(auto.mileage != null) {
+                                <li><a href="@routes.ListingController.listing("")"><i class="ion-speedometer"></i>@auto.mileage km</a></li>
+                            }
+                            <li><a href="@routes.ListingController.listing("")"><i class="ion-android-time"></i>  @auto.showDate()</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row justify-content-between">
+                    <div class="col-lg-9">
+
+                        <div class="inventory-image-gallery">
+                            @if(auto.getPictures.size > 1) {
+                                <div id="main-slider" class="splide">
+                                    <div class="splide__track">
+                                        <ul class="splide__list">
+                                        @for((pic,i) <- auto.getPictures.zipWithIndex) {
+                                            <li class="splide__slide">
+                                                <img src="@StaticAssets.getImg(pic.getUrl("large"))"
+                                                title="@pic.alt(auto.caption)" alt="@pic.alt(auto.caption)" />
+                                            </li>
+                                        }
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div id="thumbnail-slider" class="splide">
+                                    <div class="splide__track">
+                                        <ul class="splide__list">
+                                        @for((pic,i) <- auto.getPictures.zipWithIndex) {
+                                            <li class="splide__slide">
+                                                <img src="@StaticAssets.getImg(pic.getUrl("large"))"
+                                                title="@pic.alt(auto.caption)" alt="@pic.alt(auto.caption)" />
+                                            </li>
+                                        }
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            } else {
+                                <div id="main-slider">
+                                    @if(auto.getPictures.size() == 1) {
+                                        <img src="@StaticAssets.getImg(auto.getPictures.get(0).getUrl("large"))" alt="@auto.caption" title="@auto.caption"/>
+                                    } else {
+                                        <img src="@StaticAssets.getUrl("image_not_available.png")" alt="@auto.caption" title="@auto.caption"/>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <div class="title-price">
+                            <div class="title-excerpt">
+                                <h2 class="entry-title">@auto.caption</h2>
+                                @*<h3 class="entry-excerpt">@auto.getHeader</h3>*@
+                            </div>
+                            <div class="price">
+                                <span class="price">
+                                    <span class="sale-price">
+                                        <strong content="NGN">₦</strong>
+                                        @auto.planPrice()
+                                    </span>
+                                    @if(auto.priceNegotiable) {<span class="msrp">Negotiable</span>}
+                                    @*<span class="regular-price">$28,500</span>
+                                    <span class="msrp">MSRP: <strong>$39,000</strong></span>*@
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="overview alert alert-info">
+                            <h5 class="singe-title">Safety tips</h5>
+                            <ul class="mt-3 safety">
+                                <li>Don't pay in advance</li>
+                                <li>Meet seller at a safe location</li>
+                                <li>Check and inspect the car carefully before you buy</li>
+                                <li>Pay only after collecting the docs and are satisfied</li>
+                            </ul>
+                        </div>
+
+
+                        <div class="overview">
+                            <h5 class="singe-title">Vehicle Overview</h5>
+                            <div class="mt-3">
+                                <p>
+                                    @auto.getHeader(true)<br/>
+                                    @auto.address()
+                                </p>
+                                <br/>
+                                @Util.sanitizeHtml(auto.description)
+                            </div>
+                        </div>
+
+                        <div class="specifications">
+                            <h5 class="singe-title">Specifications</h5>
+
+                            <div class="specifications-wrapper">
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-image"></i>
+                                            <span class="label">Condition</span>
+                                            <span class="value">
+                                            @if(auto.condition == null) {
+                                                N/A
+                                            } else {
+                                                @auto.condition
+                                            }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    @if(Util.isNotEmpty(auto.secondCondition)) {
+                                        <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                            <span class="glance">
+                                                <i class="ion-image"></i>
+                                                <span class="label">Second Condition</span>
+                                                <span class="value">
+                                                    @auto.secondCondition
+                                                </span>
+                                            </span>
+                                        </div>
+                                    }
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-android-car"></i>
+                                            <span class="label">Body</span>
+                                            <span class="value">
+                                                @if(auto.bodyType==null) {
+                                                    N/A
+                                                } else {
+                                                    @auto.bodyType
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-gear-a"></i>
+                                            <span class="label">Drive</span>
+                                            <span class="value">
+                                                @if(auto.drive == null) {
+                                                    N/A
+                                                } else {
+                                                    @auto.drive
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-android-add-circle"></i>
+                                            <span class="label">Cylinder</span>
+                                            <span class="value">
+                                            @if(auto.cylinder == null) {
+                                                N/A
+                                            } else {
+                                                @auto.cylinder
+                                            }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-map"></i>
+                                            <span class="label">mileage</span>
+                                            <span class="value">
+                                                @if(auto.mileage==null) {
+                                                    N/A
+                                                } else {
+                                                    @auto.mileage km
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-waterdrop"></i>
+                                            <span class="label">Fuel Type</span>
+                                            <span class="value">
+                                                @if(auto.fuelType==null) {
+                                                    N/A
+                                                } else {
+                                                    @auto.fuelType
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-speedometer"></i>
+                                            <span class="label">Transmission</span>
+                                            <span class="value">
+                                                @if(auto.transmission==null) {
+                                                    N/A
+                                                } else {
+                                                    @auto.transmission
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-ios-cog-outline"></i>
+                                            <span class="label">Engine</span>
+                                            <span class="value">
+                                                @if(Util.isEmpty(auto.engineSize)) {
+                                                    N/A
+                                                } else {
+                                                    @auto.engineSize
+                                                }
+                                            </span>
+
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-contrast"></i>
+                                            <span class="label">Exterior col...</span>
+                                            <span class="value">
+                                                @if(auto.colorExterior==null) {
+                                                    N/A
+                                                } else {
+                                                    @auto.colorExterior
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-contrast"></i>
+                                            <span class="label">Interior Col...</span>
+                                            <span class="value">
+                                                @if(auto.colorInterior==null) {
+                                                    N/A
+                                                } else {
+                                                    @auto.colorInterior
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <span class="icon">&copy;</span>
+                                            <span class="label">Year Manufactured</span>
+                                            <span class="value">
+                                                @if(auto.year==null) {
+                                                    N/A
+                                                } else {
+                                                    @auto.year
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-android-car"></i>
+                                            <span class="label">Trim</span>
+                                            <span class="value">
+                                                @if(Util.isEmpty(auto.trim)) {
+                                                    N/A
+                                                } else {
+                                                    @auto.trim
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-clipboard"></i>
+                                            <span class="label">VIN</span>
+                                            <span class="value">
+                                                @if(Util.isEmpty(auto.vin)) {
+                                                    N/A
+                                                } else {
+                                                    @auto.vin
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                        <span class="glance">
+                                            <i class="ion-power"></i>
+                                            <span class="label">Horse Power</span>
+                                            <span class="value">
+                                                @if(Util.isEmpty(auto.horsePower)) {
+                                                    N/A
+                                                } else {
+                                                    @auto.horsePower
+                                                }
+                                            </span>
+                                        </span>
+                                    </div>
+                                    @if(auto.registered) {
+                                        <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                            <span class="glance">
+                                                <i class="ion-checkmark"></i>
+                                                <span class="label">Registered</span>
+                                                <span class="value">
+                                                    Yes
+                                                </span>
+                                            </span>
+                                        </div>
+                                    }
+                                    @if(auto.exchangePossible) {
+                                        <div class="col-md-3 col-sm-4 col-6 glance-col">
+                                            <span class="glance">
+                                                <i class="ion-checkmark"></i>
+                                                <span class="label">Exchange Possible</span>
+                                                <span class="value">
+                                                    Yes
+                                                </span>
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        @if(!auto.features.isEmpty) {
+                            <div class="features">
+                                <h5 class="singe-title">features & options</h5>
+                                <ul class="features-list">
+                                    @for(feat <- auto.features) {
+                                        <li><i class="ion-checkmark-circled"></i> @feat</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <div class="listing-social d-lg-flex justify-content-between mb-50">
+                            <div class="social-share">
+                                <ul class="social">
+                                    <li><a class="facebook" href="https://www.facebook.com/sharer.php?u=@Util.website()@routes.ListingController.listing(auto.getUrl)" target="_blank"><i class="ion-social-facebook"></i></a></li>
+                                    <li><a class="twitter" href="https://twitter.com/intent/tweet?text=@auto.caption&amp;url=@Util.website()@routes.ListingController.listing(auto.getUrl)"><i class="ion-social-twitter"></i></a></li>
+                                    <li><a class="tumblr" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=@Util.website()@routes.ListingController.listing(auto.getUrl)&amp;title=@auto.caption" target="_blank"><i class="ion-social-linkedin"></i></a></li>
+                                    <li><a class="googleplus" href="whatsapp://send?text=@auto.caption - @Util.website()@routes.ListingController.listing(auto.getUrl)" target="_blank"><i class="ion-social-whatsapp"></i></a></li>
+                                    <li><a class="rss" href="mailto:?subject=@auto.caption&amp;body=@Util.website()@routes.ListingController.listing(auto.getUrl)" target="_blank"><i class="ion-email"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="dealer-card card mb-50">
+                            <div class="card-header">
+                                <h4>Contact this seller</h4>
+                            </div>
+                            <div class="card-body">
+                                <span>
+                                    <i class="ion-person"></i> @display.name
+                                </span>
+                                <span>
+                                    <i class="ion-ios-telephone"></i>
+                                    <a class="call" href="tel:@display.phone">@display.phone</a>
+                                </span>
+                                @if(Util.isNotEmpty(display.whatsapp)) {
+                                    <span>
+                                        <i class="ion-social-whatsapp"></i>
+                                        <a class="call" href="@display.whatsAppLink">@display.whatsapp</a>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        @*inc.reviews()*@
+
+                        @if(similar.nonEmpty) {
+
+                            <div class="features-car mb-150">
+                                <h5 class="singe-title">Similar Cars</h5>
+
+                                <div class="row car-row cars-active-3">
+                                    @for(sim <- similar) {
+                                        <div class="car-col col-md-4">
+                                            <div class="single-car-item-2 mt-50">
+                                                <div class="car-image">
+                                                    <a href="@routes.ListingController.listing(sim.getUrl)">
+                                                        @if(sim.getPictures.size() > 0) {
+                                                            <img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="@StaticAssets.getImg(sim.getPictures.get(0).getUrl("large"))" alt="@sim.caption">
+                                                        } else {
+                                                            <img src="@StaticAssets.getUrl("image_not_available.png")" alt="@sim.caption" title="@sim.caption"/>
+                                                        }
+                                                    </a>
+                                                    @*<ul class="car-meta">
+                                                        <li>
+                                                            <button type="button">
+                                                                <i class="ion-ios-loop-strong"></i>
+                                                                <span class="car-tooltip compare">Add To Compare </span>
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button type="button">
+                                                                <i class="ion-arrow-expand"></i>
+                                                                <span class="car-tooltip View">Click To View</span>
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button type="button">
+                                                                <i class="ion-android-favorite-outline"></i>
+                                                                <span class="car-tooltip favourite">Add To Favourite</span>
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                    <span class="status special"><i class="ion-flash"></i> Special</span>*@
+                                                </div>
+                                                <div class="car-content">
+                                                    <span class="price">
+                                                        <span class="sale-price">@sim.toPrice</span>
+                                                        @*<span class="regular-price">$28,500</span>
+                                                        <span class="discount-percentage">Save 35%</span>*@
+                                                    </span>
+                                                    @if(sim.bodyType != null) {
+                                                        <span class="body-type"><a href="@routes.ListingController.listing(sim.bodyType.slug)">
+                                                            @sim.bodyType</a></span>
+                                                    }
+                                                    <h4 class="car-title"><a href="@routes.ListingController.listing(sim.getUrl)">@sim.caption </a></h4>
+                                                    <div class="author-meta">@sim.address()</div>
+                                                    @if(sim.contact != null) {
+                                                        <i class="ion-android-person"></i>
+                                                        Seller:  <a href="@routes.ListingController.listing(sim.getUrl)">@sim.contact</a>
+                                                        @if(Util.isNotEmpty(sim.contact.phone)) {
+                                                            <i class="ion-android-call"></i>
+                                                            <a href="tel:@sim.contact.phone">@sim.contact.phone</a>
+                                                        }
+                                                    }
+                                                    @if(sim.account != null) {
+                                                        <i class="ion-android-person"></i>
+                                                        Seller:  <a href="@routes.SellerController.single(sim.account.username)">@sim.account</a>
+                                                        @if(Util.isNotEmpty(sim.account.phone)) {
+                                                            <i class="ion-android-call"></i>
+                                                            <a href="tel:@sim.account.phone">@sim.account.phone</a>
+                                                        }
+                                                    }
+                                                    <span class="small">@sim.showDate()</span>
+                                                    <ul class="car-meta">
+                                                        @if(sim.transmission != null) {
+                                                            <li><a href="@routes.ListingController.listing("")?transmission=@sim.transmission.slug">@sim.transmission</a></li>
+                                                        }
+                                                        <li><a href="@routes.ListingController.listing(sim.model.parent.slug)">@sim.model.parent</a></li>
+                                                        <li><a href="@routes.ListingController.listing(auto.model.parent.slug+"/"+auto.model.slug)">@auto.model</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @main.singleSide(map)
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if(UDevice.isMobile(request)) {
+        <nav class="navbar fixed-bottom bg-light clickPhoneNav">
+            <a class="clickBtn" href="tel:@display.phone">
+                CALL @display.phone
+            </a>
+        </nav>
+    }
+}
+
+@canonicalUrl = @{
+    Util.website() + "/cars/" + auto.getUrl
+}
+
+@meta = {
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="Check out @auto.getH1. Used cars for sale. New cars For sale. Buy from trusted sellers on Carloaded.com." />
+
+    <link rel="canonical" href="@canonicalUrl" />
+    <link rel="alternate" href="@canonicalUrl" hreflang="en" />
+
+    <meta property="og:title" content="@auto.getH1" />
+    <meta property="og:description" content="Check out @auto.getH1. Used cars for sale. New cars For sale. Buy from trusted sellers on Carloaded.com." />
+    <meta property="og:type" content="Product" />
+    <meta property="og:url" content="@canonicalUrl" />
+    <meta property="og:locality" content="@auto.locality" />
+    <meta property="og:region" content="@auto.locality.parent" />
+    <meta property="og:country-name" content="Nigeria" />
+    @if(auto.getPictures.size() > 0) {
+        <meta property="og:image" content="@StaticAssets.getImg(auto.getPictures.get(0).getUrl("large"))" />
+    }
+    <meta property="og:site_name" content="Carloaded.com" />
+}
+
+@styles = {
+    <link href="@StaticAssets.getUrl("static/splide/css/splide.min.css")" rel="stylesheet" />
+    <style>
+        .inventory-image-gallery {
+            background: #f5f6f6;
+            border: 1px solid #d7dce6;
+        }
+        #thumbnail-slider:not( .is-overflow ) .splide__list {
+            justify-content: center;
+        }
+        #main-slider img {
+            width: auto;
+            max-width: 100%;
+            height: 400px;
+            margin: 0 auto;
+            display: block;
+        }
+        @@media (max-width: 767px) {
+            #main-slider img {
+                height: 300px;
+            }
+        }
+        .clickPhoneNav .clickBtn {
+            text-align: center;
+            color: #fff;
+            font-size: 20px;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            background: #ce8339;
+            font-weight: bold;
+            display: inline-block;
+            width: 90%;
+            margin: 0 auto;
+            border-radius: 5px;
+        }
+        .safety {
+            list-style-type: decimal;
+        }
+        .safety li {
+            margin-left: 15px;
+        }
+    </style>
+}
+
+@scripts = {
+    <script src="@StaticAssets.getUrl("static/splide/js/splide.min.js")"></script>
+    <script>
+        $(document).ready(function() {
+            var main = new Splide('#main-slider', {
+                type      : 'fade',
+                rewind    : true,
+                pagination: false,
+                arrows    : true,
+            });
+
+            var thumbnails = new Splide('#thumbnail-slider', {
+                fixedWidth  : 100,
+                fixedHeight : 60,
+                gap         : 10,
+                rewind      : true,
+                pagination  : false,
+                cover       : true,
+                isNavigation: true,
+                breakpoints : {
+                    600: {
+                        fixedWidth : 60,
+                        fixedHeight: 44,
+                    },
+                },
+            });
+
+            main.sync( thumbnails );
+            main.mount();
+            thumbnails.mount();
+        });
+    </script>
+}

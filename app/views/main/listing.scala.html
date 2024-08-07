@@ -1,0 +1,282 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@path = @{request.path()}
+@uri = @{request.uri()}
+@res = @{map.get("res").asInstanceOf[search.SearchRes]}
+@req = @{map.get("req").asInstanceOf[search.SearchReq]}
+@results = @{res.results}
+@count = @{results.getTotalRowCount.asInstanceOf[Long]}
+@param = @{map.get("param").asInstanceOf[pojos.Param]}
+@page = @{param.getPage}
+@pager = @{new pojos.Pager(count, page, param.getSize)}
+
+@makeAgg = @{res.aggregates.get("make")}
+@stateAgg = @{res.aggregates.get("state")}
+@conditionAgg = @{res.aggregates.get("condition")}
+@bodyTypeAgg = @{res.aggregates.get("bodyType")}
+@bodyTypeUrlStart = @{
+    var url = ""
+    if(Util.isNotEmpty(req.make)) {
+        url = req.make + "/"
+        if(Util.isNotEmpty(req.model)) {
+            url = url + req.model + "/"
+        }
+    }
+    url
+}
+
+@sellerContact = @{map.get("sellerContact").asInstanceOf[pojos.SellerContact]}
+
+@title = @{
+    var title = req.getCaption
+    if(sellerContact != null) {
+        title = title + " by " + sellerContact.name
+    }
+    title
+}
+
+@formattedCount = @{Util.formatLong(count)}
+
+@firstDate = @{
+    var first: java.util.Date = null
+    if(results.getList.size() > 0) {
+        first = results.getList.get(0).created
+    }
+    first
+}
+
+@main.layout(title + " (" + formattedCount + " listed)" + (if(page > 0) {" - Page " + page} else ""), request=request, meta=meta, styles=styles, scripts=scripts) {
+    <section class="inventory-area listing-area">
+        <div class="container">
+
+            @breadcrumbs()
+
+            <div class="row">
+                <div class="col-md-12">
+                    @main.listingSearch(req)
+                </div>
+
+                <div class="col-md-9">
+                    <h1 class="listing-title">@title</h1>
+
+                    <h2 class="listing-desc">
+                        Browse through @formattedCount @title and refine your search by car make, car model, car condition, year of manufacture, car drive train, car body type, car transmission, car color etc.
+                        @if(firstDate != null) {Last updated on @firstDate.format("dd MMM yyyy")}.
+                    </h2>
+
+                    @if(conditionAgg != null && !conditionAgg.isEmpty) {
+                        <ul class="listing-top-filter">
+                        @for((facet,index) <- conditionAgg.zipWithIndex) {
+                            <li>
+                                <a href="@UriUtil.computeQuery(uri, "condition", facet.term)">
+                                    @Util.capitalize(facet.term) (@facet.count)
+                                </a>
+                            </li>
+                            @if(index < conditionAgg.size()-1) {
+                                <li class="separator">|</li>
+                            }
+                        }
+                        </ul>
+                    }
+
+                    @if(bodyTypeAgg != null && !bodyTypeAgg.isEmpty) {
+                        <div class="listing-top-filter mt-3">
+                            <ul>
+                                @for((bodyType,index) <- bodyTypeAgg.zipWithIndex) {
+                                    <li>
+                                        <a href="@composeUrl(UriUtil.getPath(path, "m", bodyTypeUrlStart + bodyType.term), Html(Util.getNoPageUriQuery(request)))">
+                                            @Util.capitalize(bodyType.term) (@bodyType.count)
+                                        </a>
+                                    </li>
+                                    @if(index < bodyTypeAgg.size()-1) {
+                                        <li class="separator">|</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="inventory-top d-md-flex justify-content-between align-items-center">
+                        <div class="inventory-top-right">
+                            <p>@Html(pager.getDisplayXtoYofZ) Cars</p>
+                        </div>
+                        <div class="inventory-top-left d-sm-flex justify-content-between align-items-center">
+                            <div class="inventory-select">
+                                <select id="sortBy" class="form-select optgroup_test">
+                                    <option value="">SORT BY: None</option>
+                                    <option value="@UriUtil.getSortUrl(request.uri(), "year&order=desc")"
+                                        @if(uri.contains("year&order=desc")) { selected }
+                                        >SORT BY: Year Desc </option>
+                                    <option value="@UriUtil.getSortUrl(request.uri(), "year&order=asc")"
+                                        @if(uri.contains("year&order=asc")) { selected }
+                                        >SORT BY: Year Asc </option>
+                                    <option value="@UriUtil.getSortUrl(request.uri(), "price&order=desc")"
+                                        @if(uri.contains("price&order=desc")) { selected }
+                                        >SORT BY: Price (High To Low) </option>
+                                    <option value="@UriUtil.getSortUrl(request.uri(), "price&order=asc")"
+                                        @if(uri.contains("price&order=asc")) { selected }
+                                        >SORT BY: Price (Low To High) </option>
+                                    <option value="@UriUtil.getSortUrl(request.uri(), "created&order=desc")"
+                                    @if(uri.contains("created&order=desc")) { selected }
+                                    >SORT BY: Posted Dated </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                    @for((auto, index) <- results.getList.zipWithIndex) {
+                        @main.listingSingle(auto)
+                    }
+                    </div>
+
+                    @inc.pagination(pager, request)
+
+
+                </div>
+
+                <div class="col-md-3">
+                    @main.listingSide(map, request)
+                </div>
+
+
+
+            </div>
+        </div>
+    </section>
+}
+
+@composeUrl(a: Any, b: Any, c: Any = "") = @{a.toString + b.toString + c.toString}
+
+@breadcrumbs() = {
+    <ul class="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
+        <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+            <a href="@routes.HomeController.index()"
+            itemtype="http://schema.org/Thing" itemprop="item" alt="Used cars for sale in Nigeria">
+                <span itemprop="name">Home</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+        @if(Util.isNotEmpty(req.make)) {
+            <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                <a href="@routes.ListingController.listing(req.make)"
+                itemtype="http://schema.org/Thing" itemprop="item" alt="@Util.capitalize(req.make)">
+                    <span itemprop="name">@Util.capitalize(req.make)</span>
+                </a>
+                <meta itemprop="position" content="2" />
+            </li>
+            @if(Util.isNotEmpty(req.model)) {
+                <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                    <a href="@routes.ListingController.listing(req.make + "/" + req.model)"
+                    itemtype="http://schema.org/Thing" itemprop="item" alt="@Util.capitalize(req.make + " " + req.model)">
+                        <span itemprop="name">@Util.capitalize(req.make + " " + req.model)</span>
+                    </a>
+                    <meta itemprop="position" content="3" />
+                </li>
+                @if(Util.isNotEmpty(req.state)) {
+                    <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                        <a href="@routes.ListingController.listing(req.make + "/" + req.model + "/in/" + req.state)"
+                        itemtype="http://schema.org/Thing" itemprop="item" alt="@Util.capitalize(req.make + " " + req.model + " in " + req.state)">
+                            <span itemprop="name">@Util.capitalize(req.make + " " + req.model + " in " + req.state)</span>
+                        </a>
+                        <meta itemprop="position" content="4" />
+                    </li>
+                    @if(Util.isNotEmpty(req.locality)) {
+                        <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                            <a href="@routes.ListingController.listing(req.make + "/" + req.model + "/in/" + req.state + "/" + req.locality)"
+                            itemtype="http://schema.org/Thing" itemprop="item" alt="@Util.capitalize(req.make + " " + req.model + " in " + req.locality + " " + req.state)">
+                                <span itemprop="name">@Util.capitalize(req.make + " " + req.model + " in " + req.locality + " " + req.state)</span>
+                            </a>
+                            <meta itemprop="position" content="5" />
+                        </li>
+                    }
+                }
+            } else {
+                @if(Util.isNotEmpty(req.state)) {
+                    <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                        <a href="@routes.ListingController.listing(req.make + "/in/" + req.state)"
+                        itemtype="http://schema.org/Thing" itemprop="item" alt="@Util.capitalize(req.make + " in " + req.state)">
+                            <span itemprop="name">@Util.capitalize(req.make + " in " + req.state)</span>
+                        </a>
+                        <meta itemprop="position" content="3" />
+                    </li>
+                    @if(Util.isNotEmpty(req.locality)) {
+                        <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                            <a href="@routes.ListingController.listing(req.make + "/in/" + req.state + "/" + req.locality)"
+                            itemtype="http://schema.org/Thing" itemprop="item" alt="@Util.capitalize(req.make + " in " + req.locality + " " + req.state)">
+                                <span itemprop="name">@Util.capitalize(req.make + " in " + req.locality + " " + req.state)</span>
+                            </a>
+                            <meta itemprop="position" content="4" />
+                        </li>
+                    }
+                }
+            }
+        } else {
+            @if(Util.isNotEmpty(req.state)) {
+                <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                    <a href="@routes.ListingController.listing("in/" + req.state)"
+                    itemtype="http://schema.org/Thing" itemprop="item" alt="@Util.capitalize("Used cars in " + req.state)">
+                        <span itemprop="name">@Util.capitalize("Used cars in " + req.state)</span>
+                    </a>
+                    <meta itemprop="position" content="2" />
+                </li>
+                @if(Util.isNotEmpty(req.locality)) {
+                    <li class="breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                        <a href="@routes.ListingController.listing("in/" + req.state + "/" + req.locality)"
+                        itemtype="http://schema.org/Thing" itemprop="item" alt="@Util.capitalize("Used cars in " + req.locality + " " + req.state)">
+                            <span itemprop="name">@Util.capitalize("Used cars in " + req.locality + " " + req.state)</span>
+                        </a>
+                        <meta itemprop="position" content="3" />
+                    </li>
+                }
+            }
+        }
+    </ul>
+}
+
+@canonicalUrl = @{
+    composeUrl(Util.website(),request.uri())
+}
+@meta = {
+    @if(sellerContact != null) {
+        <meta name="robots" content="noindex">
+    } else {
+        <meta name="robots" content="index, follow">
+    }
+    <meta name="description" content="Browse @formattedCount @title. Used cars for sale. New cars For sale. Buy from trusted sellers on Carloaded.com." />
+    <link rel="canonical" href="@canonicalUrl" />
+    <link rel="alternate" href="@canonicalUrl" hreflang="en" />
+
+    <meta property="og:title" content="@title" />
+    <meta property="og:description" content="Browse @formattedCount @title. Used cars for sale. New cars For sale. Buy from trusted sellers on Carloaded.com." />
+    <meta property="og:type" content="Website" />
+    <meta property="og:url" content="@canonicalUrl" />
+    <meta property="og:site_name" content="Carloaded.com" />
+}
+
+@styles = {
+}
+
+@scripts = {
+    <script>
+        $(document).ready(function() {
+            $("#sortBy").change(function() {
+                if ($(this).val() !== "") {
+                    window.location.href = $(this).val();
+                } else {
+                    window.location.href = "@UriUtil.getNoSortUrl(uri)";
+                }
+            });
+
+            $("#filter-more-btn").on('click', function(){
+                $(this).toggleClass("shown");
+            });
+
+            $("#filter-more-btn").on('click', function(){
+                $(".listing-search .hide").slideToggle("show");
+            });
+            $('#localitySelect').SumoSelect({search: true, searchText: 'Search here.'});
+            $('#modelSelect').SumoSelect({search: true, searchText: 'Search here.'});
+        });
+    </script>
+}

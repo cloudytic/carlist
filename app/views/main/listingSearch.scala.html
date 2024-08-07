@@ -1,0 +1,118 @@
+@(req: search.SearchReq)
+
+<form action="@routes.ListingController.listing("")" class="searchForm">
+    <div class="search-field listing-search">
+        <div class="row">
+            <div class="single-field col-md-2 col-6 mt-2">
+                <label class="field-label">Price</label>
+                <select name="priceRange" class="form-select optgroup_test">
+                    <option value="">Price Range</option>
+                    @for((key, value) <- Util.getPriceRanges) {
+                        <option value="@key" @if(key.equals(req.priceRange)){selected}>@value</option>
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2">
+                <label class="field-label">Year</label>
+                <select name="year" class="form-select optgroup_test">
+                    <option value="">All Years</option>
+                    @for((value,name) <- USelect.selectYears()) {
+                        <option value="@value" @if(Integer.parseInt(value).equals(req.year)) {selected}>@name</option>
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2">
+                <label class="field-label">Body Type</label>
+                <select name="bodyType" class="form-select optgroup_test">
+                    <option value="">All Body Types</option>
+                    @for((slug,name) <- USelect.selectBodyTypes(2)) {
+                        <option value="@slug" @if(slug.equals(req.bodyType)) {selected}>@name</option>
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2">
+                <label class="field-label">Mileage</label>
+                <select name="mileageRange" class="form-select optgroup_test">
+                    <option value="">Mileage Range</option>
+                    @for((key, value) <- Util.getMileageRanges) {
+                        <option value="@key" @if(key.equals(req.mileageRange)){selected}>@value</option>
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2">
+                <label class="field-label">Transmission</label>
+                <select name="transmission" class="form-select optgroup_test">
+                    <option value="">All Transmissions</option>
+                    @for((slug,name) <- USelect.selectTransmissions(2)) {
+                        <option value="@slug" @if(slug.equals(req.transmission)) {selected}>@name</option>
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2 hide">
+                <label class="field-label">Fuel Type</label>
+                <select name="fuelType" class="form-select optgroup_test">
+                    <option value="">All Fuel Types</option>
+                    @for((slug,name) <- USelect.selectFuelTypes(2)) {
+                        <option value="@slug" @if(slug.equals(req.fuelType)) {selected}>@name</option>
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2 hide">
+                <label class="field-label">Exterior Color</label>
+                <select name="colorExterior" class="form-select optgroup_test">
+                    <option value="">Exterior Colors</option>
+                    @for((slug,name) <- USelect.selectColors(2)) {
+                        <option value="@slug" @if(slug.equals(req.colorExterior)) {selected}>@name</option>
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2 hide">
+                <label class="field-label">Interior Color</label>
+                <select name="colorInterior" class="form-select optgroup_test">
+                    <option value="">Select Interior Color</option>
+                    @for((slug, name) <- USelect.selectColors(2)) {
+                        <option value="@slug">@name</option>
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2 hide">
+                <label class="field-label">Condition</label>
+                <select name="condition" class="form-select optgroup_test">
+                    <option value="">All Conditions</option>
+                    @for((slug,name) <- USelect.selectConditions(2)) {
+                        <option value="@slug" @if(slug.equals(req.condition)) {selected}>@name</option>
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2 hide">
+                <label class="field-label">Model</label>
+                <select name="model" class="form-select optgroup_test" id="modelSelect">
+                    <option value="">All Models</option>
+                    @for((make, models) <- USelect.getMakeModels(2)) {
+                        <option class="option-bold" value="make-@Util.makeSlug(make)" @if(Util.makeSlug(make).equals(req.make)) {selected}>@make</option>
+                        @for((slug, model) <- models) {
+                            <option value="@slug" @if(slug.equals(req.model)) {selected}>@make @model</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="single-field col-md-2 col-6 mt-2 hide">
+                <label class="field-label">Locality</label>
+                <select name="locality" class="form-select optgroup_test" id="localitySelect">
+                    <option value="">All Localities</option>
+                    @for((state, localities) <- USelect.getStateLocalities(2)) {
+                        <option class="option-bold" value="state-@Util.makeSlug(state)" @if(Util.makeSlug(state).equals(req.state)) {selected}>@state</option>
+                        @for((slug, locality) <- localities) {
+                            <option value="@slug" @if(slug.equals(req.locality)) {selected}>@locality, @state</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2 col-6 mt-2">
+                <button class="main-btn d-block filter-btn">Filter</button>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="filter-more-btn">More Filter</button>
+</form>

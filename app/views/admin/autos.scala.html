@@ -1,0 +1,449 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@import play.mvc.Http;
+@fetched = @{map.get("fetched").asInstanceOf[Boolean]}
+@url = @{
+    if(fetched) {
+        routes.AdAutoCrud.fetched()
+    } else {
+        routes.AdAutoCrud.index()
+    }
+}
+
+@list = @{map.get("cars").asInstanceOf[java.util.List[Auto]]}
+@total = @{map.get("total").asInstanceOf[Long]}
+@param = @{map.get("param").asInstanceOf[pojos.Param]}
+@pager = @{new pojos.Pager(total, param.getPage, param.getSize)}
+
+@admin.layout("Autos", scripts=scripts, styles=styles, request=request) {
+    <div id="admin-autos">
+        <div class="card card-normal">
+            <div class="card-header">
+                <h5 class="float-start">Autos: @Html(pager.getDisplayXtoYofZ)</h5>
+                <div class="float-end">
+                    <a href="@routes.AdAutoCrud.add()" class="btn btn-link">Add Car</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form action="@url" id="findForm">
+                    <div class="row">
+                        <div class="form-group col-4">
+                            <input type="text" name="search" value="@request.queryString("search").getOrElse("")" class="form-control" placeholder="Search">
+                        </div>
+                        <div class="form-group col-2">
+                            <select name="hasPhone" class="form-select">
+                                <option value="">-Has Phone-</option>
+                                <option value="true" @if(request.queryString("hasPhone").getOrElse("").equals("true")){selected}>Yes</option>
+                                <option value="false" @if(request.queryString("hasPhone").getOrElse("").equals("false")){selected}>No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <select name="published" class="form-select">
+                                <option value="">-Published-</option>
+                                <option value="true" @if(request.queryString("published").getOrElse("").equals("true")){selected}>Yes</option>
+                                <option value="false" @if(request.queryString("published").getOrElse("").equals("false")){selected}>No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <select name="trashed" class="form-select">
+                                <option value="all">-Trashed-</option>
+                                <option value="true" @if(request.queryString("trashed").getOrElse("").equals("true")){selected}>Yes</option>
+                                <option value="false" @if(request.queryString("trashed").getOrElse("").equals("false")){selected}>No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <button class="btn btn-info" type="submit">Go!</button>
+                        </div>
+
+                        <div class="form-group col-2">
+                            <label class="field-label">Condition</label>
+                            <select name="condition" class="form-select">
+                                <option value="">All Conditions</option>
+                                @for((id,name) <- USelect.selectConditions(1)) {
+                                    <option value="@id" @if(id.equals(getParam("condition"))) {selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">Make</label>
+                            <select name="make" class="form-select">
+                                <option value="">All Makes</option>
+                                @for((id,name) <- USelect.selectMakes(1)) {
+                                    <option value="@id" @if(id.equals(getParam("make"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">Model</label>
+                            <select name="model" class="form-select" id="modelSelect">
+                                <option value="">All Models</option>
+                                @for((make, models) <- USelect.getMakeModels(1)) {
+                                    <optgroup label="@make">
+                                    @for((id, model) <- models) {
+                                        <option value="@id" @if(id.equals(getParam("model"))) {selected}>@model</option>
+                                    }
+                                    </optgroup>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">State</label>
+                            <select name="state" class="form-select">
+                                <option value="">All States</option>
+                                @for((id,name) <- USelect.selectStates(1)) {
+                                    <option value="@id" @if(id.equals(getParam("state"))){selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">Locality</label>
+                            <select name="locality" class="form-select" id="localitySelect">
+                                <option value="">All Localities</option>
+                                @for((state, localities) <- USelect.getStateLocalities(1)) {
+                                    <optgroup label="@state">
+                                    @for((id, locality) <- localities) {
+                                        <option value="@id" @if(id.equals(getParam("locality"))) {selected}>@locality</option>
+                                    }
+                                    </optgroup>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">Year</label>
+                            <select name="year" class="form-select">
+                                <option value="">All Years</option>
+                                @for((value,name) <- USelect.selectYears()) {
+                                    <option value="@value" @if(value.equals(getParam("year"))) {selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">Body Type</label>
+                            <select name="bodyType" class="form-select">
+                                <option value="">All Body Types</option>
+                                @for((id,name) <- USelect.selectBodyTypes(1)) {
+                                    <option value="@id" @if(id.equals(getParam("bodyType"))) {selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">Transmission</label>
+                            <select name="transmission" class="form-select">
+                                <option value="">All Transmissions</option>
+                                @for((id,name) <- USelect.selectTransmissions(1)) {
+                                    <option value="@id" @if(id.equals(getParam("transmission"))) {selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">Fuel Type</label>
+                            <select name="fuelType" class="form-select">
+                                <option value="">All Fuel Types</option>
+                                @for((id,name) <- USelect.selectFuelTypes(1)) {
+                                    <option value="@id" @if(id.equals(getParam("fuelType"))) {selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">Exterior Color</label>
+                            <select name="colorExterior" class="form-select">
+                                <option value="">Exterior Colors</option>
+                                @for((id,name) <- USelect.selectColors(1)) {
+                                    <option value="@id" @if(id.equals(getParam("colorExterior"))) {selected}>@name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-2">
+                            <label class="field-label">Interior Color</label>
+                            <select name="colorInterior" class="form-select">
+                                <option value="">Select Interior Color</option>
+                                @for((id, name) <- USelect.selectColors(1)) {
+                                    <option value="@id">@name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group col-2">
+                            <label class="field-label">By Account?</label>
+                            <select name="isAccount" class="form-select">
+                                <option value="">All</option>
+                                <option value="true" @if("true".equals(getParam("isAccount"))) {selected}>Account</option>
+                                <option value="false" @if("false".equals(getParam("isAccount"))) {selected}>Contact</option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group col-2">
+                            <br/>
+                            <button class="btn btn-link" type="button" id="resetBtn">Reset!</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered ctable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Item</th>
+                        <th>Description</th>
+                        <th>Information</th>
+                        <th>Contact</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                @for(auto <- list) {
+                    <tr>
+                        <td>
+                            <label class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" name="checkbox" value="checkbox" /> <span class="custom-control-label"></span> </label>
+                        </td>
+                        <td>
+                            <div class="media mt-0 mb-0">
+                                <div class="card-aside-img">
+                                    @if(!auto.getPictures.isEmpty) {
+                                        @for((image,i) <- auto.getPictures.zipWithIndex) {
+                                            <a class="@auto.getRef-fancybox text-center @if(i!=0){hide}" rel="group"
+                                            href="@StaticAssets.getImg(image.getUrl("large"))?v=@Util.generateUniqueId(10)">
+                                                <img
+                                                    @if(i==0) {
+                                                        src="@StaticAssets.getImg(image.getUrl("medium"))?v=@Util.generateUniqueId(10)"
+                                                    }
+                                                alt="" class="img-thumb"/>
+                                            </a>
+                                        }
+                                    } else {
+                                        <img src="@StaticAssets.getUrl("image_not_available.png")" class="img-thumb">
+                                    }
+                                </div>
+
+                                <div class="mt-2">
+                                    <span class="alert alert-warning" style="padding: 0">
+                                        @auto.getRef
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="max-width: 200px">
+                            <div class="media mt-0 mb-0">
+                                <div class="media-body">
+                                    <div class="card-item-desc ms-4 p-0">
+                                        <a href="@routes.ListingController.listing(auto.getUrl)" target="_blank" class="text-dark">
+                                            <h4 class="font-weight-semibold">@auto.caption</h4>
+                                        </a>
+                                        <br/>
+                                        @auto.locality / @auto.locality.parent
+                                        <br />
+                                        Posted: @auto.created.format("dd-MM-yyyy")
+                                        <br />
+                                        Boosted: @auto.boostedOn.format("dd-MM-yyyy:HH:mm")
+                                        @if(auto.crawlHref != null) {
+                                            <br />
+                                            <p style="text-wrap: wrap; max-width: 200px">@auto.crawlHref</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span>@auto.toPrice</span>
+                            <br/>
+                            @auto.model / @auto.model.parent
+
+                            @if(auto.condition != null) {
+                                <br/>
+                                @auto.condition
+                            }
+                            @if(auto.year > 0) {
+                                <br/>
+                                Year: @auto.year
+                            }
+                            @if(auto.mileage > 0) {
+                                <br/>
+                                @auto.mileage km
+                            }
+                            @if(auto.fuelType != null) {
+                                <br/>
+                                @auto.fuelType
+                            }
+                            @if(auto.transmission != null) {
+                                <br/>
+                                @auto.transmission
+                            }
+                            @if(auto.bodyType != null) {
+                                <br/>
+                                @auto.bodyType
+                            }
+                            @if(auto.drive != null) {
+                                <br/>
+                                @auto.drive
+                            }
+                            @if(auto.colorExterior != null) {
+                                <br/>
+                                @auto.colorExterior
+                                @if(auto.colorInterior != null) {
+                                    / @auto.colorInterior
+                                }
+                            }
+                        </td>
+                        <td>
+                            @if(auto.account != null) {
+                                Account<br/>
+                                @auto.account.name()
+                                <br/>
+                                @auto.account.phone
+                            } else
+                            @if(auto.contact != null) {
+                                Contact<br/>
+                                @auto.contact.name
+                                <br/>
+                                @auto.contact.phone
+                            }
+                        </td>
+                        <td>
+                            @if(auto.published) {
+                                <button data-href="@routes.AdAutoCrud.publish(auto.id)" href="javascript:void(0);" class="doHref btn btn-sm btn-success">Published</button>
+                            } else {
+                                <button data-href="@routes.AdAutoCrud.publish(auto.id)" href="javascript:void(0);" class="doHref btn btn-sm btn-danger">Not Published</button>
+                            }
+                            @if(auto.trashed) {
+                                <button data-href="@routes.AdAutoCrud.trash(auto.id)" href="javascript:void(0);" class="doHref btn btn-sm btn-danger">
+                                    <i class="fa fa-chevron-up"></i>
+                                </button>
+                                <button data-href="@routes.AdAutoCrud.delete(auto.id)" href="javascript:void(0);" class="doHref btn btn-danger btn-sm text-white" data-bs-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash"></i></button>
+                            } else {
+                                <button data-href="@routes.AdAutoCrud.trash(auto.id)" href="javascript:void(0);" class="doHref btn btn-sm btn-info">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            }
+                            <button data-href="@routes.AdAutoCrud.boost(auto.id)" href="javascript:void(0);" class="doHref btn btn-sm btn-warning">
+                                <i class="fa fa-arrow-up"></i>
+                            </button>
+                            <br/><br/>
+                            <a href="@routes.AdAutoCrud.edit(auto.id)" class="btn btn-success btn-sm text-white" data-bs-toggle="tooltip" data-original-title="Edit"><i class="fa fa-pencil"></i> EDIT</a>
+                            <a href="@routes.AdAutoCrud.getPictures(auto.id)" class="btn btn-info btn-sm text-white" data-bs-toggle="tooltip" data-original-title="Pictures"><i class="fa fa-upload"></i> PICTURES</a>
+
+
+                            <br/><br/>
+
+                            @if(auto.notVisible) {
+                                <a href="@routes.AdAutoCrud.downloadPictures(auto.id)" class="btn btn-sm btn-warning">
+                                    <i class="fa fa-download"></i> Download
+                                </a>
+                                <button data-href="@routes.AdAutoCrud.visible(auto.id)" href="javascript:void(0);" class="doHref btn btn-sm btn-danger">
+                                    <i class="fa fa-image"></i> Visible
+                                </button>
+                            } else {
+                                @if(Util.isNotEmpty(auto.crawlHref)) {
+                                    <button data-href="@routes.AdAutoCrud.visible(auto.id)" href="javascript:void(0);" class="doHref btn btn-sm btn-info">
+                                        <i class="fa fa-arrow-alt-circle-up"></i>
+                                    </button>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+
+        <ul class="pagination justify-content-center">
+
+            @if(pager.hasPrev) {
+                <li>
+                    <a class="previous" href="@UriUtil.getPagedUrl(request.uri, pager.getPage - 1)">
+                        <i class="ion-ios-arrow-back"></i> <span>Previous</span>
+                    </a>
+                </li>
+            }
+
+            @for(head <- pager.getList.headOption){
+                @if(head>1) {
+                    <li>
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+            @for(page <- pager.getList) {
+                @if(page == (pager.getPage + 1)){
+                    <li><a class="active" href="#">@page</a></li>
+                } else {
+                    <li><a alt="@page auto page" href="@UriUtil.getPagedUrl(request.uri, page - 1)">@page</a></li>
+                }
+            }
+
+            @for(last <- pager.getList.lastOption){
+                @if(last < pager.getTotalPages) {
+                    <li>
+                        <a href="#">...</a>
+                    </li>
+                }
+            }
+
+            @if(pager.hasNext) {
+                <li>
+                    <a class="next" href="@UriUtil.getPagedUrl(request.uri, pager.getPage + 1)">
+                        <span>Next</span> <i class="ion-ios-arrow-forward"></i>
+                    </a>
+                </li>
+            }
+        </ul>
+
+    </div>
+}
+
+
+@getParam(param: String) = @{
+    request.queryString(param).getOrElse("")
+}
+
+@styles = {
+    <link rel="stylesheet" href="@StaticAssets.getUrl("static/fancybox/jquery.fancybox.css")" type="text/css" media="screen" />
+    <style>
+        .img-thumb {
+            width: 100px;
+            height: 100px;
+        }
+        .hide {
+            display: none;
+        }
+        .pagination li {
+            padding: 0 5px;
+        }
+    </style>
+}
+
+@scripts = {
+    <script src="@StaticAssets.getUrl("static/fancybox/jquery.fancybox.pack.js")"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            @for((auto, index) <- list.zipWithIndex) {
+                $(".@auto.getRef-fancybox").fancybox();
+            }
+
+            $("#resetBtn").click(function(){
+                $("#findForm").find("select").val("");
+                $(':input','#findForm')
+                        .not(':button, :submit, :reset, :hidden')
+                        .val("")
+                        .prop('checked', false)
+                        .prop('selected', false);
+            });
+
+            @if(request.flash().get("message").isPresent) {
+                @if(Util.isNotEmpty(request.flash().get("message").get())) {
+                    $("#info-box").html("@request.flash().get("message").get()");
+                    $('#info-modal').modal('show');
+                }
+            }
+
+            $('#localitySelect').SumoSelect({search: true, searchText: 'Search here.'});
+            $('#modelSelect').SumoSelect({search: true, searchText: 'Search here.'});
+        });
+    </script>
+}

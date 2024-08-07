@@ -1,0 +1,481 @@
+@(title: String, meta: Html = Html(""), master_styles: Html = Html(""), master_scripts: Html = Html(""), request: Http.Request)(content: Html)
+
+@account = @{Auth.getAccount(request)}
+
+<!doctype html>
+<html class="no-js" lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        @if(UApp.is(request) && account != null) {
+            <title>@title<-->@LoginController.marshall(account)</title>
+        } else {
+            <title>@title</title>
+        }
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="shortcut icon" href="@StaticAssets.getUrl("static/images/favicon.png")" type="image/png">
+
+        @meta
+
+        <link rel="stylesheet" href="@StaticAssets.getUrl("static/css/plugins/all.min.css")">
+        <link rel="stylesheet" href="@StaticAssets.getUrl("static/css/style.css")">
+
+        @master_styles
+
+        @if(UApp.is(request)) {
+            <style>
+                .slider-area,
+                .inventory-single-area,
+                .inventory-area,
+                .blog-feature-area,
+                .blog-single-area {
+                    padding-top: 0;
+                }
+                .dash-container {
+                    margin-top: 0;
+                }
+            </style>
+        }
+
+            <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-EDPTS84MYB"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-EDPTS84MYB');
+        </script>
+
+    </head>
+
+    <body>
+
+        @content
+
+        <a href="#" class="back-to-top"><i class="ion-ios-arrow-up"></i></a>
+
+        <script src="@StaticAssets.getUrl("static/js/plugins/all.min.js")"></script>
+
+        <script>
+            $(function() {
+
+                "use strict";
+
+                $('.doHref').click(function(e){
+                    if(confirm("Are You sure?")){
+                        $("#ajaxLoad").show();
+                        $.ajax({
+                            type: "POST",
+                            url : $(this).attr("data-href"),
+                            success : function(data) {
+                                if(data === "success") {
+                                    window.location.reload();
+                                } else {
+                                    alert(data);
+                                }
+                            },
+                            complete : function(){
+                                $("#ajaxLoad").hide();
+                            }
+                        });
+                    }
+                    e.preventDefault();
+                });
+
+
+                /*=============================================
+                =                   Sticky                    =
+                =============================================*/
+
+                $(window).on('scroll', function(event) {
+                    var scroll = $(window).scrollTop();
+                    if (scroll < 110) {
+                        $(".navigation").removeClass("sticky");
+                    } else{
+                        $(".navigation").addClass("sticky");
+                    }
+                });
+
+                /*=====  End of Sticky  ======*/
+
+
+                /*=============================================
+                =                  Menu                 =
+                =============================================*/
+
+                $( ".sub-menu" ).parent( "li" ).addClass( "menu-item-has-children" );
+
+                /*=====  End of Sticky  ======*/
+
+
+
+                /*=============================================
+                =            Bootstrap dropdown               =
+                =============================================*/
+
+                // Add slideDown animation to Bootstrap dropdown when expanding.
+
+                $('.dropdown').on('show.bs.dropdown', function() {
+                    $(this).find('.dropdown-menu').first().stop(true, true).slideDown();
+                });
+                // Add slideUp animation to Bootstrap dropdown when collapsing.
+                $('.dropdown').on('hide.bs.dropdown', function() {
+                    $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
+                });
+
+                $('.cart-dropdown').hover(function() {
+                    $('.dropdown-menu', this).stop(true, true).slideDown(500);
+                    $(this).addClass('open');
+                }, function() {
+                    $('.dropdown-menu', this).stop(true, true).slideUp(500);
+                    $(this).removeClass('open');
+                });
+
+                /*=====  End of Bootstrap dropdown ======*/
+
+
+                /*=============================================
+                =           Search Field Show                 =
+                =============================================*/
+
+                $(".field-toggle").on('click', function(){
+                    $(".field-toggle-wrapper").slideToggle("slow");
+                });
+
+                $(".field-toggle").on('click', function(){
+                    $(this).toggleClass("shown");
+                });
+
+
+                /*=====  End of Search Field Show ======*/
+
+
+                /*=============================================
+                =                Mobile Menu                  =
+                =============================================*/
+
+                $('.navbar-mobile-open').on('click', function(){
+                    $('.mobile-navigation').addClass('open')
+                    $('.overlay').addClass('open')
+                });
+
+                $('.close-navbar-mobile').on('click', function(){
+                    $('.mobile-navigation').removeClass('open')
+                    $('.overlay').removeClass('open')
+                });
+
+                $('.overlay').on('click', function(){
+                    $('.mobile-navigation').removeClass('open')
+                    $('.overlay').removeClass('open')
+                });
+
+
+                /*Variables*/
+                var $offCanvasNav = $('.mobile-navigation'),
+                        $offCanvasNavSubMenu = $offCanvasNav.find('.sub-menu');
+
+                /*Add Toggle Button With Off Canvas Sub Menu*/
+                $offCanvasNavSubMenu.parent().prepend('<span class="mobile-menu-expand"></span>');
+
+                /*Close Off Canvas Sub Menu*/
+                $offCanvasNavSubMenu.slideUp();
+
+                /*Category Sub Menu Toggle*/
+                $offCanvasNav.on('click', 'li a, li .mobile-menu-expand, li .menu-title', function(e) {
+                    var $this = $(this);
+                    if (($this.parent().attr('class').match(/\b(menu-item-has-children|has-children|has-sub-menu)\b/)) && ($this.attr('href') === '#' || $this.hasClass('mobile-menu-expand'))) {
+                        e.preventDefault();
+                        if ($this.siblings('ul:visible').length) {
+                            $this.parent('li').removeClass('active-expand');
+                            $this.siblings('ul').slideUp();
+                        } else {
+                            $this.parent('li').addClass('active-expand');
+                            $this.closest('li').siblings('li').find('ul:visible').slideUp();
+                            $this.closest('li').siblings('li').removeClass('active-expand');
+                            $this.siblings('ul').slideDown();
+                        }
+                    }
+                });
+
+                $( ".sub-menu" ).parent( "li" ).addClass( "menu-item-has-children" );
+
+                /*=====  End of Navbar Category ======*/
+
+
+                /*=============================================
+                =             Newsletter Remove               =
+                =============================================*/
+
+                $('.newsletter-overlay').on('click', function(){
+                    $('.newsletter-popup').fadeOut()
+                    $(this).fadeOut()
+                });
+                $('.close').on('click', function(){
+                    $('.newsletter-popup').fadeOut()
+                    $('.newsletter-overlay').fadeOut()
+                });
+
+                /*=====  End of Newsletter Remove ======*/
+
+
+                /*=============================================
+                =               Rating Active                 =
+                =============================================*/
+
+                /* 1. Visualizing things on Hover - See next part for action on click */
+                $('#stars li').on('mouseover', function(){
+                    var onStar = parseInt($(this).data('value'), 10); // The star currently mouse on
+
+                    // Now highlight all the stars that's not after the current hovered star
+                    $(this).parent().children('li.star').each(function(e){
+                        if (e < onStar) {
+                            $(this).addClass('hover');
+                        }
+                        else {
+                            $(this).removeClass('hover');
+                        }
+                    });
+
+                }).on('mouseout', function(){
+                    $(this).parent().children('li.star').each(function(e){
+                        $(this).removeClass('hover');
+                    });
+                });
+
+                /* 2. Action to perform on click */
+                var spansCounts =  $('#stars li').length
+                $('#stars li').on('click', function(e) {
+                    console.log($(this).index())
+                    $('#stars li').removeClass('selected');
+
+                    for(var i=0 ; i < $(this).index() + 1; i++){
+                        $('#stars li').eq(i).addClass('selected')
+                    }
+                })
+
+
+                /*=====  End of Rating Active ======*/
+
+
+                /*=============================================
+                =                Back to top                  =
+                =============================================*/
+
+                // Show or hide the sticky footer button
+                $(window).on('scroll', function(event) {
+                    if($(this).scrollTop() > 600){
+                        $('.back-to-top').fadeIn(200)
+                    } else{
+                        $('.back-to-top').fadeOut(200)
+                    }
+                });
+
+
+                //Animate the scroll to yop
+                $('.back-to-top').on('click', function(event) {
+                    event.preventDefault();
+
+                    $('html, body').animate({
+                        scrollTop: 0,
+                    }, 1500);
+                });
+
+                /*=====  End of Back to top ======*/
+
+
+                /*=============================================
+                =             Car Color Active                =
+                =============================================*/
+
+                $('.color-items li span').each(function() {
+                    var get_color = $(this).attr('data-color');
+                    $(this).css("background-color", get_color);
+                });
+
+                /*=====  End of Car Color Active ======*/
+
+
+                /*=============================================
+                =              File Upload Js                 =
+                =============================================*/
+
+                var inputs = document.querySelectorAll('.file-input')
+
+                for (var i = 0, len = inputs.length; i < len; i++) {
+                    customInput(inputs[i])
+                }
+
+                function customInput (el) {
+                    const fileInput = el.querySelector('[type="file"]')
+                    const label = el.querySelector('[data-js-label]')
+
+                    fileInput.onchange =
+                            fileInput.onmouseout = function () {
+                                if (!fileInput.value) return
+
+                                var value = fileInput.value.replace(/^.*[\\\/]/, '')
+                                el.className += ' -chosen'
+                                label.innerText = value
+                            }
+                }
+
+                /*=====  End of  ======*/
+
+
+                /*=============================================
+                =                Countdown                    =
+                =============================================*/
+
+                $('[data-countdown]').each(function() {
+                    var $this = $(this), finalDate = $(this).data('countdown');
+                    $this.countdown(finalDate, function(event) {
+                        $this.html(event.strftime('<div class="count-items d-flex justify-content-center"><div class="single-count"><span class="count">%D</span><p>Days</p></div><div class="single-count"><span class="count">%H</span><p>Hours</p></div><div class="single-count"><span class="count">%M</span><p>Minutes</p></div><div class="single-count"><span class="count">%S</span><p>Seconds</p></div></div>'));
+                    });
+                });
+
+                /*=====  End of Countdown ======*/
+
+
+                /*=============================================
+                =                                  =
+                =============================================*/
+
+                $(".toggle-password").click(function() {
+
+                    $(this).toggleClass("fa-eye fa-eye-slash");
+                    var input = $($(this).attr("toggle"));
+                    if (input.attr("type") == "password") {
+                        input.attr("type", "text");
+                    } else {
+                        input.attr("type", "password");
+                    }
+                });
+
+
+
+                /*=====  End of  ======*/
+
+
+
+
+            });
+
+
+            function intFormat(n) {
+                var regex = /(\d)((\d{3},?)+)$/;
+                n = n.split(',').join('');
+                while(regex.test(n)) {
+                    n = n.replace(regex, '$1,$2');
+                }
+                return n;
+            }
+            function numFormat(n) {
+                var pointReg = /([\d,\.]*)\.(\d*)$/, f;
+                if(pointReg.test(n)) {
+                    f = RegExp.$2;
+                    return intFormat(RegExp.$1) + '.' + f;
+                }
+                return intFormat(n);
+            }
+
+            function insertOptions(index, field) {
+                var options = '<option value=""> -Select- </option>';
+                insertOptionsBase(options, index, field);
+            }
+
+            function insertOptionsBase(opts, index, field) {
+                var options = opts;
+                $("#"+field+"_options option.option_"+index).each(function (idx){
+                    var selected = '';
+                    if($(this ).attr("selected")==="selected") { selected = 'selected="selected"'; }
+                    options += '<option value="'+$(this ).val()+'" '+selected+'>'+$(this ).html()+'</option>';
+                });
+                $("#"+field+"_select").html(options);
+            }
+
+            function insertAutoModels() {
+                var makeIndex = $("#make_select").val();
+                if(makeIndex !== "") {
+                    insertOptions(makeIndex, "model");
+                }
+                $("#make_select").change(function(){
+                    var index = $(this).val();
+                    insertOptions(index, "model");
+                });
+            }
+
+
+            function Confirm(title, msg, $true, $false, callback) {
+                var $content =  "<div class='dialog-overlay'>" +
+                        "<div class='dialog'><header>" +
+                        " <h3> " + title + " </h3> " +
+                        "<i class='fa fa-times'></i>" +
+                        "</header>" +
+                        "<div class='dialog-msg'>" +
+                        " <p> " + msg + " </p> " +
+                        "</div>" +
+                        "<footer>" +
+                        "<div class='controls'>" +
+                        " <button class='btn btn-info doAction'>" + $true + "</button> " +
+                        " <button class='btn btn-light cancelAction'>" + $false + "</button> " +
+                        "</div>" +
+                        "</footer>" +
+                        "</div>" +
+                        "</div>";
+                $('body').prepend($content);
+
+                $('.doAction').click(function () {
+                    //window.open($link, "_blank"); /*new*/
+                    $(this).parents('.dialog-overlay').fadeOut(500, function () {
+                        $(this).remove();
+                    });
+                    callback();
+                });
+                $('.cancelAction, .fa-times').click(function () {
+                    $(this).parents('.dialog-overlay').fadeOut(500, function () {
+                        $(this).remove();
+                    });
+                });
+            }
+
+            function Alert(msg) {
+                Show("Alert:", msg, "Close", function () {});
+            }
+
+            function Show(title, msg, $false, callback) {
+                var $content =  "<div class='dialog-overlay'>" +
+                        "<div class='dialog'><header>" +
+                        " <h3> " + title + " </h3> " +
+                        "<i class='fa fa-times'></i>" +
+                        "</header>" +
+                        "<div class='dialog-msg'>" +
+                        " <p> " + msg + " </p> " +
+                        "</div>" +
+                        "<footer>" +
+                        "<div class='controls'>" +
+                        " <button class='btn btn-light cancelAction'>" + $false + "</button> " +
+                        "</div>" +
+                        "</footer>" +
+                        "</div>" +
+                        "</div>";
+
+                $('body').prepend($content);
+
+                $('.cancelAction, .fa-times').click(function () {
+                    $(this).parents('.dialog-overlay').fadeOut(500, function () {
+                        $(this).remove();
+                    });
+                    callback();
+                });
+            }
+        </script>
+
+        @master_scripts
+
+    </body>
+
+</html>

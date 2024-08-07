@@ -1,0 +1,23 @@
+="((css|js|images|img)/.*(\.js|\.css|\.jpg|\.png|\.ico|\.svg))
+="@StaticAssets.getUrl("static/main/$1")
+
+sbt -java-home /Users/seyi/Dev/jdk8/Contents/Home
+eval System.getProperty("java.home")
+
+sudo ssh -i prop.pem ubuntu@52.43.8.54
+
+brew services restart mongodb-community@5.0
+/usr/local/etc/mongod.conf
+/usr/local/var/log/mongodb/mongo.log
+
+sudo /usr/local/mysql/support-files/mysql.server restart
+
+sudo brew services restart httpd
+sudo apachectl restart
+
+eval System.setProperty("LOCAL_DOMAIN", "local.privateproperty.com.ng")
+eval System.setProperty("DATABASE_URL", "jdbc:mysql://localhost:3307/privateproperty")
+eval System.setProperty("PLAY_LOGS_LOCATION", "/Users/seyi/Dev/ppro_logs")
+
+
+elasticsearch -E xpack.security.enabled=false

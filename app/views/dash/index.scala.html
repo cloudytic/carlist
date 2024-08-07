@@ -1,0 +1,65 @@
+@(request: Http.Request)
+
+@account =  @{Auth.getAccount(request)}
+
+@dash.layout("Dashboard", styles = styles, scripts = scripts, request = request) {
+    <div class="dashboard mb-200">
+        <h1>Welcome @account.firstName()</h1>
+        <div class="row">
+            <div class="col-md-6 mt-20">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="@account.image()">
+                        <div>
+                            <div class="float-start">
+                                <h5 class="card-title">@account.businessName</h5>
+                                <p><i class="ion-ios-telephone"></i> @account.phone</p>
+                                <p><i class="ion-social-whatsapp"></i>  @account.whatsapp</p>
+                                <p><i class="ion-email"></i> @account.email</p>
+                                <p><i class="fa fa-user"></i> @account.username</p>
+                                <p><i class="fa fa-map-marker"></i> @account.locality</p>
+                            </div>
+                            <div class="float-end">
+                                <a href="@routes.AcProfileController.edit()" class="btn btn-sm main-btn">Edit</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-20">
+                <div class="card">
+                    <div class="card-body">
+                        <i class="icon fa fa-car"></i>
+                        <div>
+                            <h5 class="card-title">My Listings (@account.countListings())</h5>
+                            <a href="@routes.AcAutoController.index()" class="btn btn-sm main-btn mt-3">View Ads</a>
+                            <a href="@routes.AcAutoController.create()" class="btn btn-sm main-btn mt-3">Post Ad</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+@styles = {
+    <style>
+        .card-body img, .card-body .icon {
+            width: 100px;
+            font-size: 100px;
+            display: inline-block;
+            vertical-align: top;
+        }
+        .card-body > div {
+            display: inline-block;
+            margin-left: 20px;
+        }
+    </style>
+}
+
+@scripts = {
+    <script type="text/javascript">
+
+    </script>
+}

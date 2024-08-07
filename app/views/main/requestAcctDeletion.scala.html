@@ -1,0 +1,61 @@
+@(request: Http.Request)
+
+@main.layout("Request Account Deletion", request=request) {
+    <section class="choose-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <br/><br/>
+                    <h5 class="text-center">
+                        Take the following steps to request account deletion on Carloaded.com
+                    </h5>
+                    <br/>
+                    <div class="accordion" id="accordion">
+                        <div class="card">
+                            <div class="card-header">
+                                <a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapseOne">
+                                    <strong>Request Account Deletion on Carloaded.com</strong>
+                                </a>
+                            </div>
+                            <div id="collapseOne" class="collapse show">
+                                <div class="card-body">
+                                    <p>
+                                        To request account deletion on Carloaded.com, Take the following steps:
+                                        <ol>
+                                            <li>Log in to your Carloaded.com account</li>
+                                            <li>Click on your profile picture at the top right corner of the page</li>
+                                            <li>Click on <strong>Settings</strong></li>
+                                            <li>Click on <strong>Account</strong></li>
+                                            <li>Click on <strong>Delete Account</strong></li>
+                                            <li>Click on <strong>Delete Account</strong> again to confirm</li>
+                                        </ol>
+                                    </p>
+                                    <p>
+                                        <strong>Note:</strong> Deleting your account will remove all your listings and
+                                        information from Carloaded.com. You will not be able to recover your
+                                        account once it is deleted.<br/>
+                                        The following information will be removed from Carloaded.com:
+                                        <ol>
+                                            <li>All your profile information including your name, email, phone number and password</li>
+                                            <li>Your listings</li>
+                                            <li>Your messages</li>
+                                            <li>Your account settings</li>
+                                        </ol>
+                                    </p>
+                                    <p>
+                                        Need help to delete your account? Please send an email to
+                                        <a href="mailto:support@@carloaded.com">support@@carloaded.com</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+
+            </div>
+    </div>
+    </section>
+}

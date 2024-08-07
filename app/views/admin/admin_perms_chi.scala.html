@@ -1,0 +1,30 @@
+@(role: AdminRole, request: Http.Request)
+
+@permissions = @{role.permissions}
+<div class="modal-dialog">
+    <form action="@routes.AdAdmin.setPerms(role.id)" method="post" class="modal-content">
+        <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+
+        <div class="modal-header">
+            <h5 class="modal-title">@role list</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <table class="table table-striped">
+                <tbody>
+                @for((p,i) <- AdminPermission.values().zipWithIndex) {
+                    <tr>
+                        <td>@p</td>
+                        <td><input name="perms-@i" value="@p" type="checkbox"
+                            @if(permissions.contains(p)) { checked="checked" } /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-default" data-bs-dismiss="modal">Close</a>
+            <button type="submit" class="btn btn-info">Save</button>
+        </div>
+    </form>
+</div>

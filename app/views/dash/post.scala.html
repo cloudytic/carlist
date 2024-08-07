@@ -1,0 +1,40 @@
+@(autoForm: Form[Auto], auto: Auto, request: Http.Request)
+
+@url = @{
+    if(auto.id != null) {
+        routes.AcAutoController.update(auto.id).toString
+    } else {
+        routes.AcAutoController.create().toString
+    }
+}
+
+
+@dash.layout("Post", styles = styles, scripts = scripts, request = request) {
+    <section class="post-page add-car-page mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    @views.html.admin.autoForm(autoForm = autoForm, auto = auto, url = url, request = request)
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </section>
+}
+
+@styles = {
+    <style>
+
+    </style>
+}
+
+@scripts = {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#localitySelect').SumoSelect({search: true, searchText: 'Search here.'});
+            $('#modelSelect').SumoSelect({search: true, searchText: 'Search here.'});
+        });
+    </script>
+}
+

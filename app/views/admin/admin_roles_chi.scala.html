@@ -1,0 +1,60 @@
+@(admin: Admin, roles: java.util.List[AdminRole], request: Http.Request)
+
+<div class="modal-dialog">
+    <form action="@routes.AdAdmin.setRoles(admin.id)" method="post" class="modal-content">
+        <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+
+        <div class="modal-header">
+            <h5 class="modal-title">@admin role list</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body row">
+            <div class="col-md-4">
+                <strong>Current List</strong>
+                <table class="table table-striped">
+                    <tbody>
+                    @for(role <- admin.roles) {
+                        <tr>
+                            <td>@role</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <span class="input-group-addon">Filter</span>
+                    <input id="filter" type="text" class="form-control" placeholder="Type here...">
+                </div>
+                <table class="table table-striped mt-10">
+                    <tbody class="searchable">
+                    @for((role,i) <- roles.zipWithIndex) {
+                        <tr>
+                            <td>@role</td>
+                            <td><input name="ids-@i" value="@role.id" type="checkbox" @if(admin.roles.stream().anyMatch(r=>r.id.equals(role.id))) { checked="checked" } /></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-default" data-bs-dismiss="modal">Close</a>
+            <button type="submit" class="btn btn-info">Save</button>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        (function ($) {
+            $('#filter').keyup(function () {
+                var rex = new RegExp($(this).val(), 'i');
+                $('.searchable tr').hide();
+                $('.searchable tr').filter(function () {
+                    return rex.test($(this).text());
+                }).show();
+            })
+        }(jQuery));
+    });
+</script>

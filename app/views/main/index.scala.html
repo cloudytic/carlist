@@ -1,0 +1,497 @@
+@(request: Http.Request)
+
+@resSiteMap = @{
+  //search.Searcher.siteMap()
+}
+@stateAgg = @{
+  //resSiteMap.aggregates.get("state")
+}
+@makeAgg = @{
+  //resSiteMap.aggregates.get("make")
+}
+
+@featured = @{ListingController.featured()}
+
+@main.layout("Buy and Sell Cars in Nigeria", meta=meta, styles=styles, scripts=scripts, request=request) {
+  <!--====== Slider Start ======-->
+
+  <section class="slider-area slider-active">
+    <div class="single-slider bg_cover" style="background-image: url(@StaticAssets.getUrl("static/images/slider/slider-1.jpg"));">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="slider-content">
+              <h4 class="sub-title">LIMITED EDITION</h4>
+              <h2 class="main-title">PORSCHE</h2>
+              <p class="sub-title-2">Cayman <span>S</span></p>
+              <h1 class="home-title">Buy and Sell Cars in Nigeria</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!--====== Slider Ends ======-->
+
+    <!--====== Search Box Start ======-->
+
+  <section class="search-box-area">
+    <div class="container">
+      <form class="search-box-wrapper" action="@routes.ListingController.listing("")" id="findForm">
+        <div class="search-header d-md-flex align-items-center justify-content-between">
+          <div class="search-title-field d-lg-flex align-items-center">
+            <h3 class="title">I'm looking for</h3>
+            <div class="search-field">
+              <div class="search-field-radio">
+                <input name="condition" value="" type="radio" id="radioall" checked>
+                <label for="radioall"><span>All conditions</span></label>
+              </div>
+              @for((slug, name) <- USelect.selectConditions(2)) {
+                <div class="search-field-radio">
+                  <input name="condition" value="@slug" type="radio" id="radio@slug">
+                  <label for="radio@slug"><span>@name</span></label>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="search-total">
+            <p>Available <strong>@*22*@ Cars</strong></p>
+          </div>
+        </div>
+        <div>
+          <div class="search-body">
+            <div class="search-form-wrapper d-flex flex-wrap align-items-end">
+              <div class="search-field">
+                <div class="row">
+                  <div class="single-field col-lg-3 col-sm-6">
+                    <label class="field-label">Key Word</label>
+                    <input name="search" type="text" placeholder="Make, model, location etc" />
+                  </div>
+                  <div class="single-field col-lg-3 col-sm-6">
+                    <label class="field-label">Model</label>
+                    <select name="model" class="form-select optgroup_test"  id="modelSelect">
+                      <option value="">All Models</option>
+                      @for((make, models) <- USelect.getMakeModels(2)) {
+                          <option class="option-bold" value="make-@Util.makeSlug(make)">@make</option>
+                          @for((slug, model) <- models) {
+                            <option value="@slug">@make @model</option>
+                          }
+                      }
+                    </select>
+                  </div>
+                  <div class="single-field col-lg-3 col-sm-6">
+                    <label class="field-label">Price</label>
+                    <select name="priceRange" class="form-select optgroup_test">
+                      <option value="">All Prices</option>
+                      @for((key, value) <- Util.getPriceRanges) {
+                        <option value="@key">@value</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="single-field col-lg-3 col-sm-6">
+                    <label class="field-label">Locality</label>
+                    <select name="locality" class="form-select optgroup_test" id="localitySelect">
+                      <option value="">All Localities</option>
+                      @for((state, localities) <- USelect.getStateLocalities(2)) {
+                          <option class="option-bold" value="state-@Util.makeSlug(state)">@state</option>
+                          @for((slug, locality) <- localities) {
+                            <option value="@slug">@locality, @state</option>
+                          }
+                      }
+                    </select>
+                  </div>
+                </div>
+                <div class="field-toggle-wrapper">
+                  <div class="row">
+                    <div class="single-field col-lg-3 col-sm-6">
+                      <label class="field-label">Year</label>
+                      <select name="year" class="form-select optgroup_test">
+                        <option value="">All Years</option>
+                        @for((value, name) <- USelect.selectYears()) {
+                          <option value="@value">@name</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="single-field col-lg-3 col-sm-6">
+                      <label class="field-label">Body Type</label>
+                      <select name="bodyType" class="form-select optgroup_test">
+                        <option value="">All Body Types</option>
+                        @for((slug, name) <- USelect.selectBodyTypes(2)) {
+                          <option value="@slug">@name</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="single-field col-lg-3 col-sm-6">
+                      <label class="field-label">Transmission</label>
+                      <select name="transmission" class="form-select optgroup_test">
+                        <option value="">Select Transmission</option>
+                        @for((slug, name) <- USelect.selectTransmissions(2)) {
+                          <option value="@slug">@name</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="single-field col-lg-3 col-sm-6">
+                      <label class="field-label">Fuel Type</label>
+                      <select name="fuelType" class="form-select optgroup_test">
+                        <option value="">Select Fuel Type</option>
+                        @for((slug, name) <- USelect.selectFuelTypes(2)) {
+                          <option value="@slug">@name</option>
+                        }
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="single-field col-lg-3 col-sm-6">
+                      <label class="field-label">Mileage</label>
+                      <select name="mileageRange" class="form-select optgroup_test">
+                        <option value="">Select Mileage</option>
+                        @for((key, value) <- Util.getMileageRanges) {
+                          <option value="@key">@value</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="single-field col-lg-3 col-sm-6">
+                      <label class="field-label">Exterior Color</label>
+                      <select name="colorExterior" class="form-select optgroup_test">
+                        <option value="">Select Exterior Color</option>
+                        @for((slug, name) <- USelect.selectColors(2)) {
+                          <option value="@slug">@name</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="single-field col-lg-3 col-sm-6">
+                      <label class="field-label">Interior Color</label>
+                      <select name="colorInterior" class="form-select optgroup_test">
+                        <option value="">Select Interior Color</option>
+                        @for((slug, name) <- USelect.selectColors(2)) {
+                          <option value="@slug">@name</option>
+                        }
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="search-btn">
+                <button class="main-btn d-block">Search</button>
+              </div>
+            </div>
+          </div>
+          <div class="search-footer">
+            <div class="field-selected d-flex flex-wrap">
+              @*<div class="field-selected-item">
+                <i class="fas fa-times-circle"></i>
+                <span class="label">Make: </span>
+                <span class="value">Acura, Audi </span>
+              </div>
+              <div class="field-selected-item">
+                <i class="fas fa-times-circle"></i>
+                <span class="label">Model: </span>
+                <span class="value">2 Series </span>
+              </div>
+              <div class="field-selected-item">
+                <i class="fas fa-times-circle"></i>
+                <span class="label">Price: </span>
+                <span class="value"> $3,000-$5,000 </span>
+              </div>
+              <div class="field-selected-item">
+                <i class="fas fa-times-circle"></i>
+                <span class="label">Year: </span>
+                <span class="value"> 2012 </span>
+              </div>*@
+            </div>
+            <div class="footer-action d-flex flex-wrap justify-content-between">
+              <a class="field-toggle" href="javascript:void(0)">Advanced Search</a>
+              <button type="button" class="field-reset" id="resetBtn">Reset All</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+    <!--====== Search Box Ends ======-->
+
+    <!--====== Trending Start ======-->
+
+  <section class="trending-area pb-50">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="section-title">
+            <h2 class="title">Recent Search</h2>
+          </div>
+        </div>
+      </div>
+      <div class="row trending-row trending-active mt-45">
+        @for(auto <- featured) {
+          <div class="trending-col col-md-2 col-6">
+            <div class="single-trending-items">
+              <a href="@routes.ListingController.listing(auto.getUrl)">
+                @if(auto.getPictures.size() > 0) {
+                  <img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="@StaticAssets.getImg(auto.getPictures.get(0).getUrl("large"))" alt="@auto.caption">
+                } else {
+                  <img src="@StaticAssets.getUrl("image_not_available.png")" alt="@auto.caption" title="@auto.caption"/>
+                }
+                <span class="content">
+                  <span class="title">@auto.model.parent / @auto.model</span>
+                  <span class="price">@auto.toPrice</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        }
+
+      </div>
+    </div>
+  </section>
+
+    <!--====== Trending Ends ======-->
+
+    <!--====== Browse Start ======-->
+
+  @* TODO: fixed for copyright
+  <section class="choose-area pb-50 justify-content-between align-items-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="site-map">
+            <h2 class="title">Browse by model</h2>
+            <ul>
+            @for((facet,index) <- makeAgg.zipWithIndex) {
+              <li>
+                <a href="@UriUtil.getPath("/", "m", facet.term)">
+                  @Util.capitalize(facet.term) (@facet.count)
+                </a>
+                <ul>
+                @for((child,index) <- facet.children.zipWithIndex) {
+                  <li>
+                    <a href="@UriUtil.getPath("/", "m", facet.term+"/"+child.term)">
+                      @Util.capitalize(child.term) (@child.count)
+                    </a>
+                  </li>
+                }
+                </ul>
+              </li>
+            }
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="site-map">
+            <h2 class="title">Browse by location</h2>
+            <ul>
+            @for((facet,index) <- stateAgg.zipWithIndex) {
+              <li>
+                <a href="@UriUtil.getPath("/", "l", facet.term)">
+                  @Util.capitalize(facet.term) (@facet.count)
+                </a>
+                <ul>
+                @for((child,index) <- facet.children.zipWithIndex) {
+                  <li>
+                    <a href="@UriUtil.getPath("/", "l", facet.term+"/"+child.term)">
+                      @Util.capitalize(child.term) (@child.count)
+                    </a>
+                  </li>
+                }
+                </ul>
+              </li>
+            }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>*@
+
+  <section class="browse-area">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="section-title">
+            <h2 class="title">Browse by types</h2>
+          </div>
+        </div>
+      </div>
+      <div class="browse-wrapper">
+        <div class="row">
+          <div class="col-md-3 col-6">
+            <div class="single-browse-item text-center">
+              <a href="@routes.ListingController.listing("convertible")">
+                <img src="@StaticAssets.getUrl("static/images/browse-1.png")" alt="">
+                <h4 class="title">Convertible</h4>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="single-browse-item text-center">
+              <a href="@routes.ListingController.listing("coupe")">
+                <img src="@StaticAssets.getUrl("static/images/browse-2.png")" alt="">
+                <h4 class="title">Coupe</h4>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="single-browse-item text-center">
+              <a href="@routes.ListingController.listing("crossover")">
+                <img src="@StaticAssets.getUrl("static/images/browse-3.png")" alt="">
+                <h4 class="title">Crossover</h4>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="single-browse-item text-center">
+              <a href="@routes.ListingController.listing("hatchback")">
+                <img src="@StaticAssets.getUrl("static/images/browse-4.png")" alt="">
+                <h4 class="title">Hatchback</h4>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="single-browse-item text-center">
+              <a href="@routes.ListingController.listing("pickup")">
+                <img src="@StaticAssets.getUrl("static/images/browse-5.png")" alt="">
+                <h4 class="title">Pickup Truck</h4>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="single-browse-item text-center">
+              <a href="@routes.ListingController.listing("sedan")">
+                <img src="@StaticAssets.getUrl("static/images/browse-6.png")" alt="">
+                <h4 class="title">Sedan</h4>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="single-browse-item text-center">
+              <a href="@routes.ListingController.listing("sport-car")">
+                <img src="@StaticAssets.getUrl("static/images/browse-7.png")" alt="">
+                <h4 class="title">Sport Cars</h4>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="single-browse-item text-center">
+              <a href="@routes.ListingController.listing("suv")">
+                <img src="@StaticAssets.getUrl("static/images/browse-8.png")" alt="">
+                <h4 class="title">Suv</h4>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="browse-more">
+          <a href="@routes.ListingController.listing("")" class="more">See all types <i class="ion-ios-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="choose-area">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="section-title">
+            <h2 class="title">Why use us</h2>
+          </div>
+        </div>
+      </div>
+      <div class="choose-wrapper pt-20">
+        <div class="row">
+          <div class="col-lg-4 col-md-6">
+            <div class="single-choose d-md-flex">
+              <div class="choose-icon">
+                <i class="ion ion-social-usd"></i>
+                <span class="number">1</span>
+              </div>
+              <div class="choose-content flex-shrink-1">
+                <h4 class="title">best cars from many dealership</h4>
+                <p>Nigerian used and foreign used tokunbo cars at your disposal. Contact sellers directly. Free car industry report. Browse through thousand of cars</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="single-choose d-md-flex">
+              <div class="choose-icon">
+                <i class="ion ion-calculator"></i>
+                <span class="number">2</span>
+              </div>
+              <div class="choose-content flex-shrink-1">
+                <h4 class="title">EASY ONLINE FINANCING CALCULATOR</h4>
+                <p>Easy online financing calculate in a few minutes. Our 12+ financing partners will compete to get you a highly competitive rate​</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="single-choose d-md-flex">
+              <div class="choose-icon">
+                <i class="ion ion-model-s"></i>
+                <span class="number">3</span>
+              </div>
+              <div class="choose-content flex-shrink-1">
+                <h4 class="title">FAST AND ACCURATE CAR INFORMATION</h4>
+                <p>Contact Sellers. Buy your car or truck. Search thousand of cars from the convenient of your mobile phone.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+}
+
+@meta = {
+  <meta name="robots" content="index, follow" />
+  <meta name="description" content="Buy cars, motor vehicles and auto parts from trusted sellers with up-to-date car prices and reviews on Carloaded.com - the marketplace for buying and selling cars in Nigeria." />
+
+  <meta property="og:title" content="Cars For Sale in Nigeria" />
+  <meta property="og:description" content="Buy cars, motor vehicles and auto parts from trusted sellers with up-to-date car prices and reviews on Carloaded.com - the marketplace for buying and selling cars in Nigeria." />
+  <meta property="og:type" content="Website" />
+  <meta property="og:site_name" content="Carloaded.com" />
+
+  <meta property="og:url" content="@Util.website()" />
+  <meta property="og:image" content="@Util.website()/logo.png" />
+
+  <link rel="canonical" href="@Util.website()" />
+  <link rel="alternate" href="@Util.website()" hreflang="en" />
+}
+
+@styles = {
+  <script type="application/ld+json">
+        {
+          "@@context":"https://schema.org",
+          "@@type":"Organization",
+          "name":"Carloaded.com",
+          "url":"@Util.website()",
+          "logo":"@Util.website()/logo.png",
+          "description":"Buy cars, motor vehicles and auto parts from trusted sellers with up-to-date car prices and reviews on Carloaded.com - the marketplace for buying and selling cars in Nigeria.",
+          "sameAs": [
+            "https://www.facebook.com/carloadedng",
+            "https://x.com/carloadedng",
+            "https://www.instagram.com/carloadedng",
+            "https://www.youtube.com/@@carloaded"
+          ]
+        }
+  </script>
+}
+
+@scripts = {
+  <script type="text/javascript">
+      $(document).ready(function() {
+        $("#resetBtn").click(function(){
+          $("#findForm").find("select").val("");
+          $(':input','#findForm')
+                  .not(':button, :submit, :reset, :hidden')
+                  .val("")
+                  .prop('checked', false)
+                  .prop('selected', false);
+        });
+        $('#localitySelect').SumoSelect({search: true, searchText: 'Search here.'});
+        $('#modelSelect').SumoSelect({search: true, searchText: 'Search here.'});
+
+      });
+  </script>
+}
+@composeUrl(a: Any, b: Any, c: Any = "") = @{a.toString + b.toString + c.toString}

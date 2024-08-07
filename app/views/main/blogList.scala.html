@@ -1,0 +1,104 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@res = @{map.get("res").asInstanceOf[search.SearchRes]}
+@articles = @{res.resultBlogs.getList}
+@total = @{res.resultBlogs.getTotalRowCount}
+@param = @{map.get("param").asInstanceOf[pojos.Param]}
+@pager = @{new pojos.Pager(total, param.getPage, param.getSize)}
+
+@req = @{map.get("req").asInstanceOf[pojos.BlogSearch]}
+
+@title = @{
+    if(Util.isNotEmpty(req.category)){
+            Util.capitalize(req.category)
+    } else {
+        if(Util.isNotEmpty(req.tag)){
+                Util.capitalize(req.tag)
+        } else {
+            "Blog Articles"
+        }
+   }
+}
+
+@main.layout(title + ". News Room. Read the latest articles about cars", request=request, meta=meta, scripts=scripts) {
+    <section class="blog-feature-area blog-feature-active">
+        <div class="single-blog-feature bg_cover d-flex align-items-center">
+            <div class="container">
+                <div class="blog-feature-content">
+                    <ul class="meta">
+                        <li><a href="@routes.HomeController.index()">Home</a></li>
+                        <li><a href="#">@{(new Date()).format("MMM dd, yyyy")}</a></li>
+                    </ul>
+                    @if(Util.isNotEmpty(req.category)){
+                        <h1 class="title"><a href="@routes.BlogController.posts(req.category)">@Util.capitalize(req.category)</a></h1>
+                    } else {
+                        @if(Util.isNotEmpty(req.tag)){
+                            <h1 class="title"><a href="@routes.BlogController.byTag(req.tag)">@Util.capitalize(req.tag)</a></h1>
+                        } else {
+                            <h1 class="title"><a href="@routes.BlogController.posts("")">Blog Articles</a></h1>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="blog-area-2">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-lg-8">
+                    <div class="news-list-wrapper">
+                        @for(article <- articles) {
+                            <div class="single-news news-list">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="news-image">
+                                            <a href="@routes.BlogController.single(article.slug)">
+                                                <img src="@article.imageUrl()" alt="@article.title">
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="news-content">
+                                            <div class="news-meta">
+                                                <span class="meta-cat"><a href="@routes.BlogController.posts(article.category.slug)">@article.category</a></span>
+                                                <span class="meta-date"><a href="@routes.BlogController.posts(article.category.slug)">@article.created.format("MMM dd, YYYY")</a></span>
+                                            </div>
+                                            <h3 class="news-title"><a href="@routes.BlogController.single(article.slug)">@article.title</a></h3>
+                                            <p>@article.summary</p>
+                                            <ul class="news-meta-bottom">
+                                                @*<li><a href="#"><i class="ion-chatboxes"></i> 0 Comments </a></li>
+                                                <li><span><i class="ion-eye"></i> 83 Viewed</span></li>
+                                                <li><a href="#"><i class="ion-android-share-alt"></i> Share</a></li>*@
+                                                @for(tag <- article.tags){
+                                                    <li><a href="@routes.BlogController.byTag(tag.slug)"><i class="ion-checkmark"></i> @tag</a></li>
+                                                }
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @inc.pagination(pager, request)
+                </div>
+
+                @main.blogSide(request)
+            </div>
+
+        </div>
+    </section>
+}
+
+@meta = {
+    <meta name="description" content="@title. Browse our Latest Articles. Read the latest articles about cars. Buy from trusted sellers on CarLoaded.com" />
+}
+
+@scripts = {
+    <script>
+        $(document).ready(function() {
+
+        });
+    </script>
+}

@@ -1,0 +1,209 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@article = @{map.get("blogArticle").asInstanceOf[BlogArticle]}
+@featured = @{BlogController.featured()}
+
+@main.layout(article.title, styles=styles, scripts=scripts, meta=meta, request=request) {
+    <section class="blog-single-area">
+        <div class="single-post-header-2 d-flex align-items-end bg_cover">
+            <div class="container">
+                <div class="single-post-header-inner-2">
+                    <div class="entry-meta">
+                        <ul class="meta-items">
+                            <li><a href="@routes.BlogController.single(article.slug)">@article.created.format("MMM dd, yyyy")</a></li>
+                            <li><a href="@routes.BlogController.single(article.slug)">@article.views Viewed</a></li>
+                        </ul>
+                    </div>
+                    <h2 class="entry-title">@article.title</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="single-post-main-content">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-lg-8">
+                        <div class="post-content-inner single-post-left">
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="@routes.HomeController.index()">Home</a></li>
+                                <li class="breadcrumb-item"><a href="@routes.BlogController.posts("")">Blog</a></li>
+                                <li class="breadcrumb-item active">Review @article.title!</li>
+                            </ul>
+                            <div class="body-content">
+                                @Html(article.content)
+                            </div>
+                            <div class="footer-content d-flex flex-wrap justify-content-between align-items-center">
+                                <ul class="tags">
+                                    @for(tag <- article.tags){
+                                        <li><a href="@routes.BlogController.byTag(tag.slug)">@tag</a></li>
+                                    }
+                                </ul>
+                                <ul class="social">
+                                    <li><a class="facebook" href="https://www.facebook.com/sharer.php?u=@Util.website()@routes.BlogController.single(article.slug)" target="_blank"><i class="ion-social-facebook"></i></a></li>
+                                    <li><a class="twitter" href="https://twitter.com/intent/tweet?text=@article.title&amp;url=@Util.website()@routes.BlogController.single(article.slug)"><i class="ion-social-twitter"></i></a></li>
+                                    <li><a class="tumblr" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=@Util.website()@routes.BlogController.single(article.slug)&amp;title=@article.title" target="_blank"><i class="ion-social-linkedin"></i></a></li>
+                                    <li><a class="googleplus" href="whatsapp://send?text=@article.title - @Util.website()@routes.BlogController.single(article.slug)" target="_blank"><i class="ion-social-whatsapp"></i></a></li>
+                                    <li><a class="rss" href="mailto:?subject=@article.title&amp;body=@Util.website()@routes.BlogController.single(article.slug)" target="_blank"><i class="ion-email"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        @*<div class="entry-author-box">
+                            <div class="author-avatar">
+                                <div class="avatar-image">
+                                    <img src="@StaticAssets.getUrl("static/images/blog-single/author.jpg")" alt="">
+                                </div>
+                                <div class="avatar-info">
+                                    <span class="sub-title">the author</span>
+                                    <h4 class="name">Admin</h4>
+                                    <p>I’m Admin, a gentlemen and lover of life. More off this less hello salamander lied porpoise much over tightly circa horse taped so innocuously outside crud mightily rigorous negative one inside gorilla. </p>
+                                </div>
+                            </div>
+                        </div>*@
+
+                        <div class="related-post">
+                            <div class="section-title">
+                                <h2 class="title">Posts You’d Might Like</h2>
+                            </div>
+
+                            <div class="row">
+
+                                @for(fea <- featured) {
+                                    <div class="col-md-6">
+                                        <div class="single-news mt-50">
+                                            <div class="news-image">
+                                                <a href="@routes.BlogController.single(fea.slug)">
+                                                    <img src="@fea.imageUrl()" alt="@fea.title">
+                                                </a>
+                                            </div>
+                                            <div class="news-content">
+                                                <div class="news-meta">
+                                                    <span class="meta-cat"><a href="@routes.BlogController.posts(fea.category.slug)">@fea.category</a></span>
+                                                    <span class="meta-date"><a href="@routes.BlogController.single(fea.slug)">@fea.created.format("MMM dd, yyyy")</a></span>
+                                                </div>
+                                                <h3 class="news-title"><a href="@routes.BlogController.single(fea.slug)">@fea.title</a></h3>
+                                                @*
+                                                <ul class="news-meta-bottom">
+                                                    <li><a href="#"><i class="ion-chatboxes"></i> 0 Comments </a></li>
+                                                    <li><span><i class="ion-eye"></i> 83 Viewed</span></li>
+                                                    <li><a href="#"><i class="ion-android-share-alt"></i> Share</a></li>
+                                                </ul>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+
+                        @*<div class="blog-comment-box blog-comment-2">
+                            <div class="comment-wrapper">
+                                <h4 class="comment-title">02 Comments</h4>
+
+                                <ul class="comment-items">
+                                    <li>
+                                        <div class="single-comment">
+                                            <div class="comment-author">
+                                                <img src="@StaticAssets.getUrl("static/images/author-3.jpg")" alt="">
+                                            </div>
+                                            <div class="comment-content">
+                                                <ul class="meta">
+                                                    <li>by <a href="#">Ron Wteasley</a></li>
+                                                    <li>15 hours ago</li>
+                                                </ul>
+                                                <p>This car has been a blessing to me and my family so far. I will be returning to buy my second car. Go see him at Carify Center. Thank you for review and i’m always a fan of Carify’s Center</p>
+                                                <a href="#" class="replay">Replay</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="single-comment">
+                                            <div class="comment-author">
+                                                <img src="@StaticAssets.getUrl("static/images/author-4.jpg")" alt="">
+                                            </div>
+                                            <div class="comment-content">
+                                                <ul class="meta">
+                                                    <li>by <a href="#">Ron Wteasley</a></li>
+                                                    <li>15 hours ago</li>
+                                                </ul>
+                                                <p>This car has been a blessing to me and my family so far. I will be returning to buy my second car. Go see him at Carify Center. Thank you for review and i’m always a fan of Carify’s Center</p>
+                                                <a href="#" class="replay">Replay</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="comment-wrapper">
+                                <h4 class="comment-title">leave a comment</h4>
+
+                                <div class="comment-form">
+                                    <form action="#">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="single-form">
+                                                    <input type="text" placeholder="Your name *">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="single-form">
+                                                    <input type="text" placeholder="Email Address *">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="single-form">
+                                                    <input type="text" placeholder="Subject (Optinal)">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="single-form">
+                                                    <textarea placeholder="Write your message here"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="single-form">
+                                                    <button class="main-btn">post comment</button>
+
+                                                    <p class="requirements">* Field Requirements</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>*@
+                    </div>
+
+
+                    @main.blogSide(request)
+                </div>
+            </div>
+        </div>
+    </section>
+
+}
+
+@meta = {
+    <meta name="description" content="@article.metaDescription" />
+}
+
+@styles = {
+    <style>
+        @@media (max-width: 767px)  {
+            .body-content img {
+                width: auto !important;
+                height: auto !important;
+            }
+       }
+    </style>
+}
+
+@scripts = {
+    <script>
+        $(document).ready(function() {
+            $.post( "@routes.BlogController.incViews(article.id)", {})
+              .done(function( data ) {});
+        });
+    </script>
+}
+

@@ -1,0 +1,11 @@
+@(field: Field, label: String, attributes: Map[String, String], inputType: String = "text", default: String = "")
+
+<div class="form-group single-field @if(field.hasErrors) {has-error}">
+    <label class="form-label">@Html(label)</label>
+    <input type="@inputType" name="@field.name" class="form-control"
+        @if(!"password".equals(inputType)) {value="@field.value.getOrElse(default)"}
+    @for((key,value) <- attributes){@key = "@value"}>
+    @if(field.hasErrors) {
+        <span class="help-block">@{field.error.map { error => error.message }}</span>
+    }
+</div>

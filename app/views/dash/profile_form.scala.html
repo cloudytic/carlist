@@ -1,0 +1,197 @@
+@(form: Form[Account], account: Account, request: Http.Request)
+
+@import views.html.fields._
+@import scala.collection.immutable.Map
+
+@dash.layout("Profile", styles = styles, scripts = scripts, request = request) {
+    <section class="post-page add-car-page">
+        <div class="container">
+
+            <form action="@routes.AcProfileController.update()" method="post" id="form" enctype="multipart/form-data">
+
+                <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+
+                <div class="add-car-step">
+                    <div class="step-title">
+                        <span class="step">Profile</span>
+                        <h3 class="title">Edit</h3>
+                    </div>
+                    <div class="add-car-general-information">
+                        <div class="add-car-title">
+                            <h4 class="title">general information</h4>
+                        </div>
+                        <div class="search-field">
+                            <div class="row">
+                                <div class="col-md-4">
+                                @f_text(
+                                    form("businessName"),
+                                    "Business Name",
+                                    Map("placeholder"->"Business Name")
+                                )
+                                </div>
+                                <div class="col-md-4">
+                                @f_text(
+                                    form("firstName"),
+                                    "First Name",
+                                    Map("placeholder"->"First Name")
+                                )
+                                </div>
+                                <div class="col-md-4">
+                                @f_text(
+                                    form("lastName"),
+                                    "Last Name",
+                                    Map("placeholder"->"Last Name")
+                                )
+                                </div>
+                                <div class="col-md-2 col-sm-2">
+                                    @f_select(
+                                        form("dial"),
+                                        "Country Code",
+                                        UCountry.select()
+                                    )
+                                </div>
+                                <div class="col-md-5 col-sm-5">
+                                    @f_text(
+                                        form("phone"),
+                                        "Phone",
+                                        Map("placeholder"->"Phone's Number")
+                                    )
+                                </div>
+                                <div class="col-md-5 col-sm-5">
+                                    @f_text(
+                                        form("whatsapp"),
+                                        "Whatsapp",
+                                        Map("placeholder"->"Whatsapp's Number")
+                                    )
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group single-field @if(form("locality").hasErrors) {has-error}">
+                                        <label class="form-label">Location</label>
+                                        <select name="locality" class="form-select" id="locality">
+                                            <option value="" selected disabled>--select--</option>
+                                            @for((state, localities) <- USelect.getStateLocalities(1)) {
+                                                <optgroup label="@state">
+                                                @for((id, locality) <- localities) {
+                                                    <option value="@id" @if(form("locality").value().orElse("") == id) {selected = "selected"}>@locality </option>
+                                                }
+                                                </optgroup>
+                                            }
+                                        </select>
+                                        <span class="help-block">@{form("locality").error.map { error => error.message }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="single-field">
+                                        <label class="field-label">
+                                            @if(account.logo != null) {
+                                                <img src="@account.image()" height="30"/>
+                                                Change Logo
+                                            } else {
+                                                Upload Logo
+                                            }
+                                        </label>
+                                        <input type="file" class="form-control" name="file">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 @if(form("about").hasErrors) {has-error}">
+                                    <div class="form-group">
+                                        <label class="form-label">About your business</label>
+                                        <textarea name="about" class="form-control" placeholder="About your business ..." id="" rows="3">@form("about").value().orElse("")</textarea>
+                                        <span class="help-block">@{form("about").error.map { error => error.message }}</span>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                @f_text(
+                                    form("email"),
+                                    "Email",
+                                    Map("placeholder"->"Email")
+                                )
+                                </div>
+
+                                <h5 class="mt-5">Enter password only if you are changing it</h5>
+                                <div class="col-md-6">
+                                    @f_text(
+                                        form("password"),
+                                        label = "Password",
+                                        Map("placeholder"->"Password"),
+                                        inputType = "password"
+                                    )
+                                </div>
+                                <div class="col-md-6">
+                                    @f_text(
+                                        form("confirmPass"),
+                                        label = "Confirm Password",
+                                        Map("placeholder"->"Confirm Password"),
+                                        inputType = "password"
+                                    )
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="add-car-step">
+
+                    <div class="car-login-register">
+                        <div class="row justify-content-between">
+                            <div class="col-md-6">
+                                <div class="single-form form-btn">
+                                    <button type="submit" class="main-btn" name="button">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </section>
+}
+
+@styles = {
+    <style>
+
+    </style>
+}
+
+@scripts = {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            insertAutoModels();
+
+            $('#form').validate({
+                rules: {},
+                errorElement: "span"
+            });
+
+            $('#dialField')[0].sumo.unload();
+            $('#dialField').SumoSelect({
+                search: true
+            });
+        });
+
+        Dropzone.options.autoDropzone = { // camelized version of the `id`
+            paramName: "file", // The name that will be used to transfer the file
+            maxFilesize: 10, // MB
+            uploadMultiple: true,
+            createImageThumbnails: false,
+            init: function() {
+                this.on("complete", file => {
+                    var map = $.parseJSON(file.xhr.response);
+                    $.each(map.images, function(i, imagebox) {
+                        $("#image-container").prepend(imagebox);
+                    });
+                });
+            }
+        };
+
+    </script>
+}

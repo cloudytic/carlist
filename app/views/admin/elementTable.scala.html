@@ -1,0 +1,234 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@model = @{map.get("model").asInstanceOf[String]}
+@models = @{AdForms.MODELS}
+
+@list = @{
+    map.get("list").asInstanceOf[java.util.List[_ <: Nameable]]
+}
+
+@admin.layout("Form Elements", scripts=scripts, styles=styles, request=request) {
+    <div class="elements-container">
+        <div class="elements=header">
+            @for(m <- models) {
+                <a href="@routes.AdForms.index()?model=@m" class="btn btn-light">@m</a>
+            }
+        </div>
+        @if(Util.isNotEmpty(model)) {
+            <div class="mt-35">
+                <h4 class="float-start">@model List</h4>
+                <div class="float-end">
+                    <button class="addBtn btn btn-secondary" data-model="@model" data-msg="Add @model">Add @model</button>
+                </div>
+                <br class="float-none"/>
+                <div class="input-group mt-35">
+                    <span class="input-group-text">Filter</span>
+                    <input id="filterTable" type="text" class="filterTable form-control" placeholder="Quick search here...">
+                </div>
+            </div>
+        }
+        <div class="table-responsive mt-35">
+            <table class="table table-bordered table-striped ctable">
+                <tbody class="searchTable">
+                @for(el <- list) {
+                    <tr>
+                        <td>@if(el.hide) {!}</td>
+                        <td>@el (@el.slug)</td>
+                        <td>
+                            <button class="editBtn btn btn-xs btn-default" data-name="@el" id="@el.id" data-model="@model"
+                            data-slug="@el.slug"
+                            @if(el.isInstanceOf[Pluralable]) {
+                                data-plural="@{el.asInstanceOf[Pluralable].getPlural}"
+                            }>Edit</button>
+
+                            @if(el.hide) {
+                                <a href="@routes.AdForms.hide(el.id, model)" class="confirmDelete btn btn-xs btn-warning"><></a>
+                            } else {
+                                <a href="@routes.AdForms.hide(el.id, model)" class="confirmDelete btn btn-xs btn-info"><></a>
+                            }
+                            <a href="@routes.AdForms.delete(el.id, model)" class="confirmDelete btn btn-xs btn-danger">X</a>
+                        </td>
+                        <td>
+                            @if(el.getParent() != null) {
+                                <span class="label label-primary">P: @{el.getParent()}</span>
+                            }
+                        <a href="@routes.AdForms.getChildren(el.id, model)" class="chiBtn btn btn-xs btn-success">Set Children</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@parentList = @{
+    map.get("parentList").asInstanceOf[java.util.List[_ <: Hideable]]
+}
+
+@selectParent() = {
+    @if(parentList != null) {
+        <br/>
+        <input name="parentModel" value="@map.get("parentModel")" type="hidden">
+        <select name="parentId" class="form-control">
+            <option value="">Select @map.get("parentModel").asInstanceOf[String]</option>
+            @for(par <- parentList) {
+                <option value="@par.id">@par</option>
+            }
+        </select>
+    }
+}
+
+@scripts = {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            (function ($) {
+                $('.filterTable').keyup(function () {
+                    var rex = new RegExp($(this).val(), 'i');
+                    $('.searchTable tr').hide();
+                    $('.searchTable tr').filter(function () {
+                        return rex.test($(this).text());
+                    }).show();
+                })
+            }(jQuery));
+        });
+    </script>
+
+
+    <div id="addModal" class="modal fade">
+        <div class="modal-dialog">
+            <form class="modal-content" action="@routes.AdForms.add()" method="post">
+                <div class="modal-header">
+                    <h5 id="addHeader" class="modal-title">Add</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+                    <input id="addMod" type="hidden" name="model" />
+                    <input placeholder="Name" id="addData"	type="text" name="data" class="form-control" required="required" />
+                    <input placeholder="Plural" id="addPlural"	type="text" name="plural" class="form-control" />
+                    @selectParent()
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    <button id="addSubmit" type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal fade">
+        <div class="modal-dialog">
+            <form class="modal-content" action="@routes.AdForms.edit()" method="post">
+                <div class="modal-header">
+                    <h5 id="editHeader" class="modal-title">Edit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+                    <input id="editId" type="hidden" name="id" />
+                    <input id="editMod" type="hidden" name="model" />
+                    <input placeholder="Name" id="editData" type="text" name="data" class="form-control" required="required"/>
+                    <input placeholder="Plural" id="editPlural" type="text" name="plural" class="form-control" />
+                    <input placeholder="Slug" id="editSlug" type="text" name="slug" class="form-control" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    <button id="editSubmit" type="submit" class="btn btn-primary">Edit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="chiModal" class="modal fade">
+
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.addBtn').click(function(e){
+                var msg = $(this).attr("data-msg");
+                var model = $(this).attr("data-model");
+
+                if(model === "AutoCategory" || model === "AutoType" || model === "BlogCategory") {
+                    $("#addPlural").show();
+                } else {
+                    $("#addPlural").hide();
+                }
+
+                $('#addHeader').html(msg);
+                $('#addMod').val(model);
+                $('#addModal').modal('show');
+            });
+            $('.editBtn').click(function(e){
+                var model = $(this).attr("data-model");
+                var id = $(this).attr("id");
+                var data = $(this).attr("data-name");
+
+                var plural = $(this).attr("data-plural");
+                var slug = $(this).attr("data-slug");
+
+                $('#editMod').val(model);
+                $('#editId').val(id);
+                $('#editData').val(data);
+                $('#editModal').modal('show');
+
+                $('#editPlural').val(plural);
+                $('#editSlug').val(slug);
+
+                if(model === "AutoCategory" || model === "AutoType" || model === "BlogCategory") {
+                    $("#editPlural").show();
+                } else {
+                    $("#editPlural").hide();
+                }
+            });
+            $(".chiBtn").click(function(){
+                $('#chiModal').html("");
+                $('#ajaxLoad').show();
+                $.ajax({
+                    url : $(this).attr("href"),
+                    success : function(data) {
+                        $('#chiModal').html(data);
+                        $('#chiModal').modal('show');
+                        $('#ajaxLoad').hide();
+                    }
+                });
+                return false;
+            });
+
+            $('.confirmDelete').click(function(e){
+                if(confirm("Are You sure?")){
+                    $("#ajaxLoad").show();
+                    $.ajax({
+                        type: "POST",
+                        url : $(this).attr("href"),
+                        success : function(data) {
+                            if(data === "success") {
+                                window.location.reload();
+                            } else {
+                                alert(data);
+                            }
+                        },
+                        complete : function(){
+                            $("#ajaxLoad").hide();
+                        }
+                    });
+                }
+                e.preventDefault();
+            });
+
+            var flash = "@request.queryString("message")";
+            if(flash !== "") {
+                Alert("Alert", flash);
+            }
+        });
+    </script>
+}
+
+@styles = {
+    <style>
+        button {
+            width: auto !important;
+        }
+    </style>
+}

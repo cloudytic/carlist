@@ -1,0 +1,106 @@
+@(aForm: Form[Admin], ad: Admin, request: Http.Request)
+
+@import scala.collection.immutable.Map
+
+@url = @{
+    if(ad.id != null) routes.AdAdmin.update(ad.id)
+    else routes.AdAdmin.create()
+}
+
+@admin.layout("Admin Form", styles=styles, scripts=scripts, request=request) {
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="fa fa-edit"></i>Admin Form</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <form method="post" action="@url" class="form-horizontal" data-validate="parsley">
+                        <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+
+                        @if(aForm.hasGlobalErrors) {
+                            <div class="alert alert-danger">
+                            @aForm.globalError().get().message
+                            </div>
+                        }
+                        @if(request.flash().get("success").isPresent) {
+                            <div class="alert alert-success">
+                            @request.flash().get("success").get()
+                            </div>
+                        }
+                        @f_text(
+                            aForm("firstName"),
+                            "First Name",
+                            "text",
+                            Map("placeholder"->"First Name","required" -> "required")
+                        )
+                        @f_text(
+                            aForm("lastName"),
+                            "Name",
+                            "text",
+                            Map("placeholder"->"Last Name","required" -> "required")
+                        )
+                        @f_text(
+                            aForm("email"),
+                            "Email",
+                            "email",
+                            Map("placeholder"->"Email", "required" -> "required")
+                        )
+
+                        @if(ad.id != null) {
+                            <hr/>
+                            Leave password empty if you are not changing it
+                            <hr/>
+                        }
+
+                        @f_text(
+                            aForm("password"),
+                            "Password",
+                            "password",
+                            Map("placeholder"->"Password")
+                        )
+                        @f_text(
+                            aForm("confirmPass"),
+                            "Confirm Password",
+                            "password",
+                            Map("placeholder"->"Confirm Password")
+                        )
+                        <div class="form-group mt-50">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </div>
+    </div>
+}
+@styles = {
+}
+
+@scripts = {
+    <script type="text/javascript">
+    $(function() {
+
+    });
+    </script>
+}
+
+@f_text(field: Field, label: String, inputType: String, attributes: Map[String, String], default: String = "") = {
+    <div class="form-group @if(field.hasErrors) {has-error} clearfix mt-3">
+        <label class="form-label">@label</label>
+        <input type="@inputType"
+        name="@field.name"
+            @if(!"password".equals(inputType)) {
+                value="@field.value.getOrElse(default)"
+            }
+        class="form-control"
+        @for((key,value) <- attributes){
+            @key = "@value"
+        }>
+        @if(field.hasErrors) {
+            <span class="help-block">@{field.error.map { error => error.message }}</span>
+        }
+    </div>
+}

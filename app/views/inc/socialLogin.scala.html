@@ -1,0 +1,104 @@
+@()
+
+<script>
+
+    const fragmentString = location.hash.substring(1);
+
+    // Parse query string to see if page request is coming from OAuth 2.0 server.
+    let params = {};
+    let regex = /([^&=]+)=([^&]*)/g, m;
+    while (m = regex.exec(fragmentString)) {
+        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+    }
+    if (Object.keys(params).length > 0) {
+        $.post("@routes.LoginController.socialLogin()", params, function(data) {
+            if(data==="new") {
+                window.location.href = "@routes.AcProfileController.edit()";
+            } else if(data==="existing") {
+                window.location.href = "@routes.AcDashboardController.index()";
+            } else {
+                alert("Something went wrong. Please try again later.");
+            }
+        });
+
+    }
+
+    function googleLogin() {
+        // Google's OAuth 2.0 endpoint for requesting an access token
+        var oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
+
+        // Create <form> element to submit parameters to OAuth 2.0 endpoint.
+        var form = document.createElement('form');
+        form.setAttribute('method', 'GET'); // Send as a GET request.
+        form.setAttribute('action', oauth2Endpoint);
+
+        // Parameters to pass to OAuth 2.0 endpoint.
+        var params = {'client_id': '256057742181-1g549pe4gs3g169gu8mqpb0a4cp4fco3.apps.googleusercontent.com',
+            'redirect_uri': '@Util.website()@routes.LoginController.index()',
+            'response_type': 'token',
+            'scope': 'https://www.googleapis.com/auth/userinfo.email',
+            'include_granted_scopes': 'true'
+        };
+
+        // Add form parameters as hidden input values.
+        for (var p in params) {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'hidden');
+            input.setAttribute('name', p);
+            input.setAttribute('value', params[p]);
+            form.appendChild(input);
+        }
+
+        // Add form to page and submit it to open the OAuth 2.0 endpoint.
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
+<script>
+      (function(d, s, id){
+                  var js, fjs = d.getElementsByTagName(s)[0];
+                  if (d.getElementById(id)) {return;}
+                  js = d.createElement(s); js.id = id;
+                  js.src = "https://connect.facebook.net/en_US/sdk.js";
+                  fjs.parentNode.insertBefore(js, fjs);
+              }(document, 'script', 'facebook-jssdk')
+      );
+
+      window.fbAsyncInit = function() {
+          <!-- Initialize the SDK with your app and the Graph API version for your app -->
+          FB.init({
+              appId            : '905421146235222',
+              xfbml            : true,
+              version          : 'v19.0'
+          });
+      };
+
+      function facebookLogin() {
+          FB.login(function(response) {
+              if (response.authResponse) {
+                  console.log('Welcome!  Fetching your information.... ');
+                  FB.api('/me', {fields: 'name, email'}, function(response) {
+                      var params = {
+                          'fb_login': 'true',
+                          'email': response.email,
+                          'name': response.name
+                      }
+                      $.post("@routes.LoginController.socialLogin()", params, function(data) {
+                          if(data==="new") {
+                              window.location.href = "@routes.AcProfileController.edit()";
+                          } else if(data==="existing") {
+                              window.location.href = "@routes.AcDashboardController.index()";
+                          } else {
+                              alert("Something went wrong. Please try again later.");
+                          }
+                      });
+                  });
+              } else {
+                  console.log('User cancelled login or did not fully authorize.');
+              }
+          }, {scope: 'public_profile,email'});
+      }
+
+</script>

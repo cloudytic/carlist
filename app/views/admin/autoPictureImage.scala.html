@@ -1,0 +1,43 @@
+@(picture: AutoPicture, position: Integer)
+@src = @{
+    if(picture != null) {
+        StaticAssets.getImg(picture.getUrl("medium"))
+    }
+    else ""
+}
+
+<tr class="tr-image">
+
+    @if(picture != null) {
+        <td class="td-image">
+            <div class="image-container image-src">
+                <img src="@src" id="imageSrc@position">
+            </div>
+        </td>
+        <td class="td-image-task">
+            <label for="index@picture.id">Position</label>
+            <input type="number" class="position-index form-control" name="index@picture.id" value="@position" required>
+
+            <button type="button" class="btn btn-danger image-del" id="imageDel@position" data-name="@picture.name">
+                <i class="fa fa-times"></i>
+                Delete
+            </button>
+
+            <select class="form-select image-rotate">
+                <option value="">Rotate</option>
+                <option value="@routes.AdAutoCrud.rotate(picture.name, 270)">CounterClockwise</option>
+                <option value="@routes.AdAutoCrud.rotate(picture.name, 90)">Clockwise</option>
+                <option value="@routes.AdAutoCrud.rotate(picture.name, 180)">Flip</option>
+            </select>
+
+        </td>
+    } else {
+        <td colspan="2">
+            <div class="image-container image-upload">
+                <i class="fa fa-upload"></i>
+                <input type="hidden" name="index" value="@position">
+                <input type="file" accept="image/*" name="imageInput" id="imageInput" data-num="@position" multiple>
+            </div>
+        </td>
+    }
+</tr>

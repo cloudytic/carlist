@@ -1,0 +1,341 @@
+@(autoForm: Form[Auto], auto: Auto, url: String, request: Http.Request)
+
+@import scala.collection.immutable.Map
+
+@uuid = @{autoForm("uuid").value().orElseThrow(() => new RuntimeException("uuid is not defined"))}
+
+<form action="@url" method="post" id="autoForm">
+
+    <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+    <input type="hidden" name="uuid" value="@uuid"/>
+
+    @if(autoForm.hasErrors) {
+        <div class="alert alert-danger">
+            Please correct the errors below and try again.
+        </div>
+    }
+
+    <div class="add-car-step">
+        <div class="step-title">
+            <span class="step">step 1</span>
+            <h3 class="title">Car Attributes</h3>
+        </div>
+        <div class="add-car-general-information">
+            <div class="add-car-title">
+                <h4 class="title">general information</h4>
+            </div>
+            <div class="search-field">
+                <div class="row">
+
+                    <div class="col-md-4 col-6">
+                    @f_select(
+                        autoForm("category"),
+                        "Category <span>*</span> ",
+                        USelect.selectCategories(1)
+                    )
+                    </div>
+                    <div class="col-md-4 col-6">
+                    @f_select(
+                        autoForm("condition"),
+                        "Condition <span>*</span> ",
+                        USelect.selectConditions(1)
+                    )
+                    </div>
+
+
+                    <div class="col-md-4 col-12">
+                        <div class="single-field @if(autoForm("model").hasErrors) {has-error}">
+                            <label class="field-label">Model <span>*</span> </label>
+                            <select name="model" class="form-select optgroup_test" id="modelSelect">
+                                <option value="" selected disabled>--select--</option>
+                                @for((make, models) <- USelect.getMakeModels(1)) {
+                                    @for((id, model) <- models) {
+                                        <option value="@id" @if(autoForm("model").value().orElse("") == id) {selected = "selected"}>@make @model</option>
+                                    }
+                                }
+                            </select>
+                            <span class="help-block">@{autoForm("model").error.map { error => error.message }}</span>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4 col-6">
+                    @f_select(
+                        autoForm("year"),
+                        "Year <span>*</span> ",
+                        USelect.selectYears()
+                    )
+                    </div>
+                    <div class="col-md-4 col-6">
+                    @f_select(
+                        autoForm("transmission"),
+                        "Transmission <span>*</span> ",
+                        USelect.selectTransmissions(1)
+                    )
+                    </div>
+
+
+                    <div class="col-md-4 col-6">
+                    @f_select(
+                        autoForm("bodyType"),
+                        "Body Type",
+                        USelect.selectBodyTypes(1)
+                    )
+                    </div>
+                    <div class="col-md-4 col-6">
+                    @f_select(
+                        autoForm("fuelType"),
+                        "Fuel Type",
+                        USelect.selectFuelTypes(1)
+                    )
+                    </div>
+
+
+                    <div class="col-md-4 col-6">
+                    @f_select(
+                        autoForm("colorExterior"),
+                        "Exterior Colour",
+                        USelect.selectColors(1)
+                    )
+                    </div>
+                    <div class="col-md-4 col-6">
+                    @f_select(
+                        autoForm("colorInterior"),
+                        "Interior Colour",
+                        USelect.selectColors(1)
+                    )
+                    </div>
+
+
+                    <div class="col-md-4 col-6">
+                    @f_select(
+                        autoForm("drive"),
+                        "Drive Train",
+                        USelect.selectDriveTrains(1)
+                    )
+                    </div>
+
+                    <div class="col-md-4 col-6">
+                    @f_text(
+                        autoForm("engineSize"),
+                        "Engine Size",
+                        Map("placeholder"->"Enter Engine Size (cc)")
+                    )
+                    </div>
+
+
+                    <div class="col-md-4 col-6">
+                    @f_text(
+                        autoForm("mileage"),
+                        "Mileage",
+                        Map("placeholder"->"Enter Mileage (km)")
+                    )
+                    </div>
+                    <div class="col-md-4 col-6">
+                    @f_text(
+                        autoForm("vin"),
+                        "VIN",
+                        Map("placeholder"->"Enter Vin (Chassis Number)")
+                    )
+                    </div>
+
+
+                    <div class="col-md-4 col-12">
+                        <div class="single-field @if(autoForm("locality").hasErrors) {has-error}">
+                            <label class="field-label">Location <span>*</span> </label>
+                            <select name="locality" class="form-select optgroup_test" id="localitySelect">
+                                <option value="" selected disabled>--select--</option>
+                                @for((state, localities) <- USelect.getStateLocalities(1)) {
+                                    @for((id, locality) <- localities) {
+                                        <option value="@id" @if(autoForm("locality").value().orElse("") == id) {selected = "selected"}>@locality, @state </option>
+                                    }
+                                }
+                            </select>
+                            <span class="help-block">@{autoForm("locality").error.map { error => error.message }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-6"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="add-car-features">
+            <div class="add-car-title">
+                <h4 class="title">Extra Features & Options</h4>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="add-car-single-features row">
+                        <ul class="features-list col-md-3 col-6">
+                        @for(((value, name), index) <- USelect.selectFeatures(1).zipWithIndex) {
+                            <li>
+                                <div class="add-car-checkbox">
+                                    <input type="checkbox" id="feature@value"
+                                    name="feat[@value]" value="@value"
+                                    @if(autoForm("feat["+value+"]").value().orElse("") == value)  {checked}>
+                                    <label for="feature@value"><span></span> @name</label>
+                                </div>
+                            </li>
+                            @if((index+1) % 7 == 0) {
+                                </ul>
+                                <ul class="features-list col-md-3 col-6">
+                            }
+                        }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="add-car-step">
+        <div class="step-title">
+            <span class="step">step 2</span>
+            <h3 class="title">Seller’s Note & Price</h3>
+        </div>
+
+        <div class="car-description-form">
+            <div class="add-car-title">
+                <h4 class="title">Description</h4>
+            </div>
+            <div class="text-box @if(autoForm("description").hasErrors) {has-error}">
+                <textarea name="description" id="desc" placeholder="Description" rows="3" class="form-control">@autoForm("description").value().orElse("")</textarea>
+                <span class="help-block desc-error">@{autoForm("description").error.map { error => error.message }}</span>
+            </div>
+        </div>
+
+        <div class="car-asking-price">
+            <div class="add-car-title">
+                <h4 class="title">Set Your Asking Price</h4>
+            </div>
+
+            <div class="asking-price-field">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="search-field">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                @f_text(
+                                    autoForm("price"),
+                                    "Price (N) <span>*</span> ",
+                                    Map("placeholder"->"e.g 5000000 (comma is added automatically)", "onkeyup"->"this.value = numFormat(this.value)", "required"->"required", "id"->"price")
+                                )
+                                </div>
+                                @*
+                                <div class="col-6">
+                                <div class="single-field">
+                                <label class="field-label">Sale Price ($)</label>
+                                <input type="text" placeholder="0.00" />
+                                </div>
+                                </div>*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="asking-price-content">
+                            <p>Determine a competitive price by comparing your vehicle's information and mileage to similar vehicles for sale by dealers and private sellers in your area. Then consider pricing your vehicle within range</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        @if(Auth.isAdmin(request)) {
+            <div class="col-md-12 mt-50">
+                <div class="@if(autoForm("caption").hasErrors) {has-error}">
+                    <div class="add-car-title">
+                        <h4 class="title">Caption</h4>
+                    </div>
+                    <div class="single-field">
+                        <input type="text" name="caption" value="@autoForm("caption").value().orElse("")" class="form-control" placeholder="e.g Neat Honda Accord Suv Black"/>
+                        @if(autoForm("caption").hasErrors) {
+                            <span class="help-block">@{autoForm("caption").error.map { error => error.message }}</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+
+    @*
+    <div class="add-car-step">
+        <div class="step-title">
+            <span class="step">step 3</span>
+            <h3 class="title">Video (Optional)</h3>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="add-car-upload">
+                    <div class="add-car-title">
+                        <h4 class="title">upload video</h4>
+                    </div>
+                    <p>Upload video about your vehicle</p>
+
+                    <div class="single-upload mt-40">
+                        <input type="text" placeholder="Enter link URL of your video here...">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="add-car-upload">
+                    <div class="add-car-title">
+                        <h4 class="title">upload video</h4>
+                    </div>
+                    <p>Upload video about your vehicle</p>
+
+                    <div class="single-upload file-input mt-40">
+                        <input type='file'>
+                        <span class='button'>Choose file</span>
+                        <span class='label' data-js-label>No file choosen</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+
+    <div class="add-car-step">
+
+        <div class="car-login-register">
+            <div class="row justify-content-between">
+                <div class="col-lg-6">
+                    <div class="single-form form-btn">
+                        @if(auto.id != null) {
+                            <button type="submit" class="main-btn" name="button">Submit</button>
+                        }
+                        <button type="submit" class="main-btn" name="submit" value="toPic" id="nextBtn">Next Step</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@f_text(field: Field, label: String, attributes: Map[String, String], inputType: String = "text", default: String = "") = {
+    <div class="single-field @if(field.hasErrors) {has-error}">
+        <label class="field-label">@Html(label)</label>
+        <input type="@inputType" name="@field.name"
+            @if(!"password".equals(inputType)) {value="@field.value.getOrElse(default)"}
+        @for((key,value) <- attributes){@key = "@value"} class="form-control">
+        <span class="help-block">@{field.error.map { error => error.message }}</span>
+    </div>
+}
+
+@f_select(field: Field, label: String, options: java.util.Map[String, String]) = {
+    <div class="single-field @if(field.hasErrors) {has-error}">
+        <label class="field-label">@Html(label)</label>
+        <select name="@field.name" class="form-select optgroup_test">
+            <option value="" selected disabled>--select--</option>
+            @for((id, name) <- options) {
+                <option value="@id" @if(field.value.getOrElse("") == id) {selected = "selected"}>@name</option>
+            }
+        </select>
+        <span class="help-block">@{field.error.map { error => error.message }}</span>
+    </div>
+}

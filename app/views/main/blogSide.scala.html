@@ -1,0 +1,87 @@
+@(request: Http.Request)
+
+@resAgg = @{search.Searcher.blogAggs()}
+
+@categoryAgg = @{resAgg.aggregates.get("category")}
+@tagAgg = @{resAgg.aggregates.get("tag")}
+
+@popular = @{BlogController.popular()}
+
+<div class="col-xxl-3 col-lg-4">
+    <div class="blog-sidebar">
+        <div class="blog-sidebar-search">
+            <h3 class="sidebar-title">Search</h3>
+
+            <div class="search-form">
+                <form action="@routes.BlogController.posts("")">
+                    <input name="search" type="text" placeholder="Search">
+                    <button><i class="ion-android-search"></i></button>
+                </form>
+            </div>
+        </div>
+
+        @if(categoryAgg != null && !categoryAgg.isEmpty) {
+            <div class="blog-sidebar-category">
+                <h3 class="sidebar-title">categories</h3>
+                <div class="category-list">
+                    <ul class="list">
+                        @for((facet,index) <- categoryAgg.zipWithIndex) {
+                            <li><a href="@routes.BlogController.posts(facet.term)">@Util.capitalize(facet.term) <span>(@facet.count)</span></a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
+        <div class="blog-sidebar-post">
+            <h3 class="sidebar-title">Popular posts</h3>
+
+            <ul class="post-items">
+                @for(pop <- popular) {
+                    <li>
+                        <div class="single-post">
+                            <div class="post-image">
+                                <a href="@routes.BlogController.single(pop.slug)">
+                                    <img src="@pop.imageUrl()" alt="@pop.title">
+                                </a>
+                            </div>
+                            <div class="post-content">
+                                <div class="news-meta">
+                                    <span class="meta-cat"><a href="@routes.BlogController.posts(pop.category.slug)">@pop.category</a></span>
+                                    <span class="meta-date"><a href="@routes.BlogController.single(pop.slug)">@pop.created.format("MMM dd, yyyy")</a></span>
+                                </div>
+                                <h6 class="post-title"><a href="@routes.BlogController.single(pop.slug)">@pop.title</a></h6>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        @*
+        <div class="blog-sidebar-newsletter">
+            <h3 class="sidebar-title">newsletter</h3>
+
+            <div class="newsletter-form">
+                <p>Subscribe to our newsletter to get the latest cars discount promotions, and other latest news.</p>
+                <form action="#">
+                    <input type="text" placeholder="Email address">
+                    <button class="main-btn">subscribe</button>
+                </form>
+                <span>Don’t worry ! we not spam.</span>
+
+            </div>
+        </div>*@
+
+        <div class="blog-sidebar-tags">
+            @if(tagAgg != null && !tagAgg.isEmpty) {
+                <h3 class="sidebar-title">Popular tags</h3>
+                <div class="sidebar-tags">
+                    @for((facet,index) <- tagAgg.zipWithIndex) {
+                        <a href="@routes.BlogController.byTag(facet.term)">@Util.capitalize(facet.term)</a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

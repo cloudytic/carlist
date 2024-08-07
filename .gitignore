@@ -1,0 +1,14 @@
+conf/application.conf
+logs
+target
+.g8
+.idea
+.bsp
+.idea_modules
+.classpath
+.project
+.settings
+RUNNING_PID
+project/project/
+project/target/
+node_modules

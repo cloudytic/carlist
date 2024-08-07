@@ -1,0 +1,195 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@import play.mvc.Http;
+@path = @{request.path()}
+
+@list = @{map.get("list").asInstanceOf[java.util.List[BlogArticle]]}
+@total = @{map.get("total").asInstanceOf[Long]}
+@param = @{map.get("param").asInstanceOf[pojos.Param]}
+@pager = @{new pojos.Pager(total, param.getPage, param.getSize)}
+
+@admin.layout("Blog Articles", scripts=scripts, styles=styles, request=request) {
+    <div id="admin-blog">
+        <div class="card card-normal">
+            <div class="card-header">
+                <h5 class="float-start">Blog Articles: @Html(pager.getDisplayXtoYofZ)</h5>
+                <div class="float-end">
+                    <a href="@routes.AdBlog.add()" class="btn btn-link">Post Article</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form action="@path">
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <input type="text" name="search" value="@request.queryString("search").getOrElse("")" class="form-control" placeholder="Search">
+                        </div>
+                        <div class="form-group col-3">
+                            <button class="btn btn-info" type="submit">Go!</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered ctable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Meta</th>
+                        <th>Admin</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                @for(blogArticle <- list) {
+                    <tr>
+                        <td>
+                            <label class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" name="checkbox" value="checkbox" /> <span class="custom-control-label"></span> </label>
+                        </td>
+                        <td>
+                            <div class="media mt-0 mb-0">
+                                <div class="card-aside-img">
+                                    <img src="@blogArticle.imageUrl()" class="img-thumb">
+                                </div>
+                            </div>
+                        </td>
+                        <td style="max-width: 200px">
+                            <div class="media mt-0 mb-0">
+                                <div class="media-body">
+                                    <div class="card-item-desc ms-4 p-0">
+                                        <a href="@routes.BlogController.single(blogArticle.slug)" target="_blank" class="text-dark">
+                                            <h4 class="font-weight-semibold">@blogArticle.title</h4>
+                                        </a>
+                                        <br />
+                                        @blogArticle.created.format("dd-MM-yyyy")
+                                        <br/>
+                                        Views <span class="badge bg-primary">@blogArticle.views</span><br/>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <p>@blogArticle.metaDescription</p>
+                            <p>@blogArticle.category</p>
+                            <p>
+                                @for(tag <- blogArticle.tags){
+                                    <span class="badge bg-info">@tag</span>
+                                }
+                            </p>
+                        </td>
+                        <td>
+                            <p>@blogArticle.author</p>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0);" class="text-bg-warning">Published</a>
+                            <br/>
+                            <a href="@routes.AdBlog.edit(blogArticle.id)" class="btn btn-success btn-sm text-white" data-bs-toggle="tooltip" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-danger btn-sm text-white" data-bs-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash"></i></a>
+                            <a class="btn btn-primary btn-sm text-white" data-bs-toggle="tooltip" data-original-title="View"><i class="fa fa-eye"></i></a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+
+        <ul class="pagination justify-content-center">
+
+            @if(pager.hasPrev) {
+                <li>
+                    <a class="previous" href="@UriUtil.getPagedUrl(request.uri, pager.getPage - 1)">
+                        <i class="ion-ios-arrow-back"></i> <span>Previous</span>
+                    </a>
+                </li>
+            }
+
+            @for(head <- pager.getList.headOption){
+                @if(head>1) {
+                    <li>
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+            @for(page <- pager.getList) {
+                @if(page == (pager.getPage + 1)){
+                    <li><a class="active" href="#">@page</a></li>
+                } else {
+                    <li><a alt="@page blogArticle page" href="@UriUtil.getPagedUrl(request.uri, page - 1)">@page</a></li>
+                }
+            }
+
+            @for(last <- pager.getList.lastOption){
+                @if(last < pager.getTotalPages) {
+                    <li>
+                        <a href="#">...</a>
+                    </li>
+                }
+            }
+
+            @if(pager.hasNext) {
+                <li>
+                    <a class="next" href="@UriUtil.getPagedUrl(request.uri, pager.getPage + 1)">
+                        <span>Next</span> <i class="ion-ios-arrow-forward"></i>
+                    </a>
+                </li>
+            }
+        </ul>
+
+    </div>
+}
+
+@styles = {
+    <style>
+        .img-thumb {
+            width: 100px;
+            height: 100px;
+        }
+        .hide {
+            display: none;
+        }
+        .pagination li {
+            padding: 0 5px;
+        }
+    </style>
+}
+
+
+
+@scripts = {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.confirm').click(function(e){
+                if(confirm("Are You sure?")){
+                    $("#ajaxLoad").show();
+                    $.ajax({
+                        type: "POST",
+                        url : $(this).attr("data-href"),
+                        success : function(data) {
+                            if(data === "success") {
+                                window.location.reload();
+                            } else {
+                                alert(data);
+                            }
+                        },
+                        complete : function(){
+                            $("#ajaxLoad").hide();
+                        }
+                    });
+                }
+                e.preventDefault();
+            });
+
+            @if(request.flash().get("message").isPresent) {
+                @if(Util.isNotEmpty(request.flash().get("message").get())) {
+                    $("#info-box").html("@request.flash().get("message").get()");
+                    $('#info-modal').modal('show');
+                }
+            }
+        });
+    </script>
+}

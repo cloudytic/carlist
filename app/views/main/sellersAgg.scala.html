@@ -1,0 +1,82 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@sellers = @{map.get("sellers").asInstanceOf[java.util.List[pojos.SellerContact]]}
+@count = @{map.get("count").asInstanceOf[Long]}
+@param = @{map.get("param").asInstanceOf[pojos.Param]}
+@pager = @{new pojos.Pager(count, param.getPage, param.getSize)}
+
+@main.layout("Car sellers contact list", request=request, styles=styles) {
+    <div class="page-breadcrumb-area">
+        <div class="container">
+            <div class="row">
+                <div class="page-breadcrumb">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="@routes.HomeController.index()">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@routes.ListingController.sellers()">Sellers</a></li>
+                        <li class="breadcrumb-item active">Sellers List</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="dealer-list-page">
+        <div class="container">
+            <div class="page-title">
+                <h4 class="title">Car Sellers Contact List</h4>
+            </div>
+
+            <div class="dealer-list-content">
+                <div class="dealer-list-items row">
+                    @for(seller <- sellers) {
+                        <div class="single-dealer seller-contact-box col-md-4">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="dealer-author">
+                                        <div class="author-image">
+                                            <img src="@seller.logo" alt="">
+                                        </div>
+                                        <div class="author-content">
+                                            <h4 class="author-name"><a href="@seller.url()">@seller.name</a></h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="dealer-info">
+                                        <div class="dealer-info-wrapper d-flex flex-wrap">
+                                            <div class="info-left">
+                                                <ul class="info">
+                                                    <li><i class="ion-model-s"></i><a href="@seller.url()"><span>@seller.autoCount</span> Cars</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="dealer-info-phone">
+                                            <ul>
+                                                <li>Phone: <a href="tel:@seller.phone">@seller.phone</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @inc.pagination(pager, request)
+            </div>
+        </div>
+    </section>
+}
+
+@meta = {
+    <meta name="description" content="Car sellers contact list. Get in touch to buy from trusted sellers on Carloaded.com." />
+}
+
+@styles = {
+    <style>
+        .seller-contact-box {
+            margin-bottom: 30px;
+            border: 1px solid #ebebeb;
+        }
+    </style>
+}
+

@@ -1,0 +1,237 @@
+@(blogForm: Form[BlogArticle], blogArticle: BlogArticle, request: Http.Request)
+
+@import scala.collection.immutable.Map
+
+@url = @{
+    if(blogArticle.id != null) {
+        routes.AdBlog.update(blogArticle.id)
+    } else {
+        routes.AdBlog.create()
+    }
+}
+
+@slugAttr = @{
+    val map = Map("placeholder"->"Enter Slug")
+    if(blogArticle.id != null) {
+        map + ("readonly"->"readonly")
+    } else {
+        map
+    }
+}
+    
+@admin.layout("Blog Form", styles=styles, scripts=scripts, request=request) {
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="fa fa-edit"></i>Blog Form</h5>
+        </div>
+
+        <div class="card-body">
+            <form action="@url" method="post" id="blogForm">
+                <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+
+                <div class="row">
+                    <div class="col-md-3">
+                    @f_select(
+                        blogForm("category"),
+                        "Category <span>*</span> ",
+                        USelect.selectBlogCategories(1)
+                    )
+                    </div>
+
+                    <div class="col-md-9">
+                    @f_text(
+                        blogForm("slug"),
+                        "Slug",
+                        slugAttr
+                    )
+                    </div>
+
+                    <div class="col-md-12 mt-1">
+                    @f_text(
+                        blogForm("title"),
+                        "Title",
+                        Map("placeholder"->"Enter Title")
+                    )
+                    </div>
+
+                    <div class="col-md-12 mt-1">
+                        <label>Meta Description</label>
+                        <div class="text-box @if(blogForm("metaDescription").hasErrors) {has-error}">
+                            <textarea name="metaDescription" placeholder="Meta Description" rows="2" class="form-control">@blogForm("metaDescription").value().orElse("")</textarea>
+                            <span class="help-block desc-error">@{blogForm("metaDescription").error.map { error => error.message }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-1">
+                        <label>Summary</label>
+                        <div class="text-box @if(blogForm("summary").hasErrors) {has-error}">
+                            <textarea name="summary" placeholder="Summary" rows="3" class="form-control">@blogForm("summary").value().orElse("")</textarea>
+                            <span class="help-block desc-error">@{blogForm("summary").error.map { error => error.message }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-1">
+                        <h6>Content</h6>
+                        <div class="text-box @if(blogForm("content").hasErrors) {has-error}">
+                            <textarea name="content" id="summernote" placeholder="Content" class="form-control">@blogForm("content").value().orElse("")</textarea>
+                            <span class="help-block desc-error">@{blogForm("content").error.map { error => error.message }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-20">
+                        @for(((value, name), index) <- USelect.selectBlogTags(1).zipWithIndex) {
+                            <input type="checkbox" id="tag@value"
+                            name="tagList[@value]" value="@value"
+                            @if(blogForm("tagList["+value+"]").value().orElse("") == value)  {checked}>
+                            <label for="tag@value"><span></span> @name</label>
+                        }
+                    </div>
+
+                    <div class="image-container image-upload mt-20">
+                        <i class="fa fa-upload"></i>
+                        <input type="file" accept="image/*" name="imageInput" id="imageInput" multiple>
+                    </div>
+
+                    <div class="col-md-12 mt-50">
+                        <div class="single-form form-btn">
+                            <button type="submit" class="main-btn">Submit</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="postWait">
+        <div class="progress">
+            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-danger active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                Please Wait....
+            </div>
+        </div>
+    </div>
+}
+
+@f_text(field: Field, label: String, attributes: Map[String, String], inputType: String = "text", default: String = "") = {
+    <div class="form-group @if(field.hasErrors) {has-error}">
+        <label class="form-label">@Html(label)</label>
+        <input type="@inputType" name="@field.name"
+            @if(!"password".equals(inputType)) {value="@field.value.getOrElse(default)"}
+        @for((key,value) <- attributes){@key = "@value"} class="form-control">
+        <span class="help-block">@{field.error.map { error => error.message }}</span>
+    </div>
+}
+
+@f_select(field: Field, label: String, options: java.util.Map[String, String]) = {
+    <div class="form-group @if(field.hasErrors) {has-error}">
+        <label class="form-label">@Html(label)</label>
+        <select name="@field.name" class="form-select">
+            <option value="" selected disabled>--select--</option>
+            @for((id, name) <- options) {
+                <option value="@id" @if(field.value.getOrElse("") == id) {selected = "selected"}>@name</option>
+            }
+        </select>
+        <span class="help-block">@{field.error.map { error => error.message }}</span>
+    </div>
+}
+
+@styles = {
+    <link href="@StaticAssets.getUrl("static/summernote/summernote.min.css")" rel="stylesheet">
+    <style>
+        #postWait {
+            display: none;
+            width: 80%;
+            position: fixed;
+            top: 100px;
+            z-index: 1000000;
+
+        }
+        #postWait .progress {
+            width: 80%;
+            margin: 0 auto;
+        }
+    </style>
+}
+
+@scripts = {
+    <script src="@StaticAssets.getUrl("static/summernote/summernote.min.js")"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#summernote').summernote({
+                minHeight: 600,
+            });
+
+            $(document).delegate(':file', 'change', function (event) {
+                if(this.files.length > 0) {
+                    sendFile(this.files);
+                }
+            });
+
+            function sendFile(files) {
+                $("#postWait").show();
+                var data = new FormData();
+                for (var i = 0; i < files.length; i++) {
+                    data.append('file-'+i, files[i]);
+                }
+                $.ajax({
+                    type: 'post',
+                    url: '@routes.AdBlog.uploadImage()',
+                    data: data,
+                    mimeType:"multipart/form-data",
+                    contentType: false,
+                    cache: false,
+                    processData:false,
+                    success: function(ret) {
+                        if(ret === 'error') {
+                            Alert("An error occurred. Please try again")
+                        } else {
+                            var map = $.parseJSON(ret);
+                            $.each(map.images, function(i, url) {
+                                $('#summernote').summernote('insertImage', url, "image"+i);
+                            });
+                        }
+                    },
+                    complete: function(){
+                        $("#postWait").hide();
+                    },
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener("progress",
+                                uploadProgressHandler,
+                                false
+                        );
+                        xhr.addEventListener("load", loadHandler, false);
+                        xhr.addEventListener("error", errorHandler, false);
+                        xhr.addEventListener("abort", abortHandler, false);
+
+                        return xhr;
+                    }
+                });
+            }
+
+            function uploadProgressHandler(event)
+            {
+                //$("#loaded_n_total").html("Uploaded "+event.loaded+" bytes of "+event.total);
+                var percent = (event.loaded / event.total) * 100;
+                var progress = Math.round(percent);
+                $("#postWait #progressBar").html(progress +"% uploaded... please wait");
+                $("#postWait #progressBar").css("width", progress + "%");
+                //$("#status").html(progress +"% uploaded... please wait");
+            }
+
+            function loadHandler(event)
+            {
+                $("#postWait #progressBar").css("width", "0%");
+            }
+
+            function errorHandler(event){
+                //$("#status").html("Upload Failed");
+            }
+
+            function abortHandler(event){
+                //$("#status").html("Upload Aborted");
+            }
+
+        });
+    </script>
+}

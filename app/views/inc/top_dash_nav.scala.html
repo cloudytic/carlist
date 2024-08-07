@@ -1,0 +1,33 @@
+@()
+
+<li class="dropdown">
+    <a class="dropdown-toggle" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="ion-ios-contact-outline"></i>
+        <span class="d-none d-lg-block"> My Dashboard</span>
+    </a>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="@routes.AcAutoController.index()">
+            <i class="fa fa-user"></i> My Ads
+        </a>
+        <a class="dropdown-item" href="@routes.AcAutoController.add()">
+            <i class="ion-model-s"></i> Post Ad
+        </a>
+        <a class="dropdown-item" href="@routes.AcProfileController.edit()">
+            <i class="ion-settings"></i> Profile Settings
+        </a>
+        <a class="dropdown-item" href="@routes.AcAutoController.index()?trashed=true">
+            <i class="fa fa-trash"></i> Deleted Ads
+        </a>
+
+        @*
+        <a class="dropdown-item" href="#">
+            <i class="ion-email"></i> Inbox
+        </a>
+        <a class="dropdown-item" href="#">
+            <i class="ion-alert"></i> Notifications
+        </a>*@
+        <a class="dropdown-item" href="@routes.LoginController.logout()">
+            <i class="ion-log-out"></i> Log out
+        </a>
+    </div>
+</li>

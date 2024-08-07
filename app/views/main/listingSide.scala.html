@@ -1,0 +1,87 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@path = @{request.path()}
+@uri = @{request.uri()}
+@res = @{map.get("res").asInstanceOf[search.SearchRes]}
+@req = @{map.get("req").asInstanceOf[search.SearchReq]}
+@results = @{res.results}
+@count = @{results.getTotalRowCount.asInstanceOf[Long]}
+@param = @{map.get("param").asInstanceOf[pojos.Param]}
+@pager = @{new pojos.Pager(count, param.getPage, param.getSize)}
+
+@makeAgg = @{res.aggregates.get("make")}
+
+@stateAgg = @{res.aggregates.get("state")}
+
+<div class="listing-side inventory-top inventory-sidebar">
+
+    @if(makeAgg != null && !makeAgg.isEmpty) {
+        <h4>By Model</h4>
+        <ul class="listing-side-filter">
+            @for((make,index) <- makeAgg.zipWithIndex) {
+                <li>
+                    <a href="@composeUrl(UriUtil.getPath(path, "m", make.term), Html(Util.getNoPageUriQuery(request)))" class="row">
+                        <span class="col-8">
+                            @Util.capitalize(make.term)
+                        </span>
+                        <span class="col-4">
+                            @make.count
+                        </span>
+                    </a>
+                    @if(Util.isNotEmpty(req.make)) {
+                        <ul>
+                            @for((model,index) <- make.children.zipWithIndex) {
+                                <li class="child">
+                                    <a href="@composeUrl(UriUtil.getPath(path, "m", make.term+"/"+model.term), Html(Util.getNoPageUriQuery(request)))" class="row">
+                                        <span class="col-8">
+                                            @Util.capitalize(model.term)
+                                        </span>
+                                        <span class="col-4">
+                                            @model.count
+                                        </span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+        </ul>
+    }
+    @if(stateAgg != null && !stateAgg.isEmpty) {
+        <h4>By Location</h4>
+        <ul class="listing-side-filter">
+            @for((state,index) <- stateAgg.zipWithIndex) {
+                <li>
+                    <a href="@composeUrl(UriUtil.getPath(path, "l", state.term), Html(Util.getNoPageUriQuery(request)))" class="row">
+                        <span class="col-8">
+                            @Util.capitalize(state.term)
+                        </span>
+                        <span class="col-4">
+                            @state.count
+                        </span>
+                    </a>
+                    @if(Util.isNotEmpty(req.state)) {
+                        <ul>
+                            @for((locality,index) <- state.children.zipWithIndex) {
+                                <li>
+                                    <a href="@composeUrl(UriUtil.getPath(path, "l", state.term+"/"+locality.term), Html(Util.getNoPageUriQuery(request)))" class="row">
+                                        <span class="col-8">
+                                            @Util.capitalize(locality.term)
+                                        </span>
+                                        <span class="col-4">
+                                            @locality.count
+                                        </span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+
+@composeUrl(a: Any, b: Any, c: Any = "") = @{a.toString + b.toString + c.toString}

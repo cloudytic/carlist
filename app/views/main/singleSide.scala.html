@@ -1,0 +1,252 @@
+@(map: java.util.Map[String, Object])
+@display = @{map.get("display").asInstanceOf[utilities.Display]}
+@auto = @{map.get("auto").asInstanceOf[Auto]}
+
+@bySeller = @{map.get("bySeller").asInstanceOf[List[Auto]]}
+
+<div class="col-xxl-3 col-lg-3">
+    <div class="sidebar">
+        @*<div class="sidebar-trusted">
+            <div class="single-logo">
+                <img src="@StaticAssets.getUrl("static/images/auto-check.png")" alt="">
+            </div>
+            <div class="single-logo">
+                <img src="@StaticAssets.getUrl("static/images/certified.png")" alt="">
+            </div>
+        </div>*@
+
+        <div class="sidebar-dealer-info">
+            <div class="dealer-title">
+                <h4 class="sidebar-title">seller info</h4>
+            </div>
+            @*
+            <div class="dealer-map">
+                <div id="contact-map"></div>
+            </div>
+            *@
+            <div class="dealer-info">
+                <div class="dealer-profile">
+                    <div class="profile-image">
+                        <img src="@display.logo" alt="">
+                    </div>
+                    <div class="profile-content">
+                        <h5 class="name"><a href="@display.url">@display.name</a></h5>
+                        @*<div class="profile-rating">
+                            <ul class="star">
+                                <li class="rating-on"><i class="ion-android-star"></i></li>
+                                <li class="rating-on"><i class="ion-android-star"></i></li>
+                                <li class="rating-on"><i class="ion-android-star"></i></li>
+                                <li class="rating-on"><i class="ion-android-star"></i></li>
+                                <li><i class="ion-android-star"></i></li>
+                            </ul>
+                            <span>(24 Rating)</span>
+                        </div>*@
+                    </div>
+                </div>
+                <ul class="info-items">
+                    @*<li>
+                        <i class="ion-ios-location"></i>
+                        <span>568 Library St, Newington, London, UK</span>
+                    </li>*@
+                    <li>
+                        <i class="ion-ios-telephone"></i>
+                        <span><a class="call" href="tel:@display.phone">@display.phone</a></span>
+                    </li>
+                    @if(Util.isNotEmpty(display.whatsapp)) {
+                        <li>
+                            <i class="ion-social-whatsapp"></i>
+                            <span><a class="call" href="@display.whatsAppLink">@display.whatsapp</a></span>
+                        </li>
+                    }
+                    @*<li>
+                        <i class="ion-android-mail"></i>
+                        <span><a href="mailto:support@@travelcars256.com">support@@travelcars256.com</a></span>
+                    </li>
+                    <li>
+                        <i class="ion-android-globe"></i>
+                        <span><a class="site" href="#">travelcars256.com</a></span>
+                    </li>*@
+                </ul>
+                @*
+                <ul class="social">
+                    <li><a class="facebook" href="https://www.facebook.com/sharer.php?u=@Util.website()@routes.ListingController.listing(auto.getUrl)" target="_blank"><i class="ion-social-facebook"></i></a></li>
+                    <li><a class="twitter" href="https://twitter.com/intent/tweet?text=@auto.caption&amp;url=@Util.website()@routes.ListingController.listing(auto.getUrl)"><i class="ion-social-twitter"></i></a></li>
+                    <li><a class="tumblr" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=@Util.website()@routes.ListingController.listing(auto.getUrl)&amp;title=@auto.caption" target="_blank"><i class="ion-social-linkedin"></i></a></li>
+                    <li><a class="googleplus" href="whatsapp://send?text=@auto.caption - @Util.website()@routes.ListingController.listing(auto.getUrl)" target="_blank"><i class="ion-social-whatsapp"></i></a></li>
+                    <li><a class="rss" href="mailto:?subject=@auto.caption&amp;body=@Util.website()@routes.ListingController.listing(auto.getUrl)" target="_blank"><i class="ion-email"></i></a></li>
+                </ul>*@
+            </div>
+        </div>
+
+        @*<div class="sidebar-dealer-contact">
+            <h4 class="sidebar-title">contact dealer</h4>
+
+            <div class="dealer-contact-form">
+                <form action="#">
+                    <div class="single-input">
+                        <input type="text" placeholder="Full Name">
+                        <i class="ion-android-person"></i>
+                    </div>
+                    <div class="single-input">
+                        <input type="email" placeholder="Emaill Address *">
+                        <i class="ion-android-mail"></i>
+                    </div>
+                    <div class="single-input">
+                        <input type="text" placeholder="Phone (Optinal)">
+                        <i class="ion-android-call"></i>
+                    </div>
+                    <div class="single-input">
+                        <input type="text" placeholder="Zip Code *">
+                        <i class="ion-ios-location"></i>
+                    </div>
+                    <div class="single-input">
+                        <textarea placeholder="Write your Message here..."></textarea>
+                    </div>
+                    <div class="single-input">
+                        <button class="main-btn d-block">check availability</button>
+                    </div>
+                </form>
+            </div>
+        </div>*@
+
+        @*
+        <div class="sidebar-calculator">
+            <h4 class="sidebar-title">financing calculator</h4>
+
+            <div class="calculator-form">
+                <form action="#">
+                    <div class="calculator-input">
+                        <span class="placeholder">
+                            Car Price <span>($)</span>
+                        </span>
+                        <div class="input">
+                            <input type="text">
+                        </div>
+                    </div>
+                    <div class="calculator-input">
+                        <span class="placeholder">
+                            Interested Rate <span>(%)</span>
+                        </span>
+                        <div class="input">
+                            <input type="text">
+                        </div>
+                    </div>
+                    <div class="calculator-input">
+                        <span class="placeholder">
+                            Period <span>(month)</span>
+                        </span>
+                        <div class="input">
+                            <input type="text">
+                        </div>
+                    </div>
+                    <div class="calculator-input">
+                        <span class="placeholder">
+                            Down Payment <span>($)</span>
+                        </span>
+                        <div class="input">
+                            <input type="text">
+                        </div>
+                    </div>
+
+                    <div class="calculator-form-result">
+                        <div class="single-result">
+                            <span class="title">Monthly Payment:</span>
+                            <span class="main-result">$1,250.52</span>
+                        </div>
+                        <div class="single-result">
+                            <span class="title">Total Interest Payment:</span>
+                            <span class="main-result">$628.63</span>
+                        </div>
+                        <div class="single-result">
+                            <span class="title">Total Amount to Pay:</span>
+                            <span class="main-result">$24,350.65</span>
+                        </div>
+                    </div>
+
+                    <div class="calculator-btn">
+                        <div class="single-btn">
+                            <button class="main-btn d-block">calculate</button>
+                        </div>
+                        <div class="single-btn">
+                            <button class="main-btn d-block main-btn-2">Clear</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="sidebar-post">
+            <h4 class="sidebar-title">related posts</h4>
+
+            <div class="post-wrapper">
+                <div class="single-news mt-30">
+                    <div class="news-image">
+                        <a href="blog-single-with-sidebar.html">
+                            <img src="@StaticAssets.getUrl("static/images/blog/blog-1.jpg")" alt="">
+                        </a>
+                    </div>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span class="meta-cat"><a href="#">News</a></span>
+                            <span class="meta-date"><a href="#">July 31, 2022</a></span>
+                        </div>
+                        <h3 class="news-title"><a href="blog-single-with-sidebar.html">BMW X6, The Car Trending in 2019, Best Choice...</a></h3>
+                        <ul class="news-meta-bottom">
+                            <li><a href="#"><i class="ion-chatboxes"></i> 0 Comments </a></li>
+                            <li><span><i class="ion-eye"></i> 83 Viewed</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="single-news mt-30">
+                    <div class="news-image">
+                        <a href="blog-single-with-sidebar.html">
+                            <img src="@StaticAssets.getUrl("static/images/blog/blog-2.jpg")" alt="">
+                        </a>
+                    </div>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span class="meta-cat"><a href="#">News</a></span>
+                            <span class="meta-date"><a href="#">July 31, 2022</a></span>
+                        </div>
+                        <h3 class="news-title"><a href="blog-single-with-sidebar.html">BMW X6, The Car Trending in 2019, Best Choice...</a></h3>
+                        <ul class="news-meta-bottom">
+                            <li><a href="#"><i class="ion-chatboxes"></i> 0 Comments </a></li>
+                            <li><span><i class="ion-eye"></i> 83 Viewed</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        *@
+        @if(bySeller.nonEmpty) {
+            <div class="sidebar-similar-listing">
+                <h4 class="sidebar-title">Cars by Seller</h4>
+
+                <ul class="similar-listing-items">
+                    @for(sim <- bySeller) {
+                        <li>
+                            <div class="single-listing">
+                                <div class="listing-image">
+                                    <a href="@routes.ListingController.listing(sim.getUrl)">
+                                    @if(sim.getPictures.size() > 0) {
+                                        <img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="@StaticAssets.getImg(sim.getPictures.get(0).getUrl("large"))" alt="@sim.caption">
+                                    } else {
+                                        <img src="@StaticAssets.getUrl("image_not_available.png")" alt="@sim.caption" title="@sim.caption"/>
+                                    }
+                                    </a>
+                                </div>
+                                <div class="listing-content">
+                                    <h2 class="title"><a href="@routes.ListingController.listing(sim.getUrl)">@sim.caption </a></h2>
+                                    <div class="price">
+                                        <span class="price-amount">@sim.toPrice</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
+    </div>
+</div>

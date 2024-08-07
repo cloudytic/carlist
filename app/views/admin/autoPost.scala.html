@@ -1,0 +1,31 @@
+@(autoForm: Form[Auto], auto: Auto, request: Http.Request)
+
+@url = @{
+    if(auto.id != null) {
+        routes.AdAutoCrud.update(auto.id).toString
+    } else {
+        routes.AdAutoCrud.create().toString
+    }
+}
+
+@admin.layout("Auto Form", styles=styles, scripts=scripts, request=request) {
+    <section class="post-page add-car-page mt-5">
+        <div class="container">
+            @views.html.admin.autoForm(autoForm = autoForm, auto = auto, url = url, request = request)
+        </div>
+    </section>
+}
+@styles = {
+    <style>
+
+    </style>
+}
+
+@scripts = {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#localitySelect').SumoSelect({search: true, searchText: 'Search here.'});
+            $('#modelSelect').SumoSelect({search: true, searchText: 'Search here.'});
+        });
+    </script>
+}

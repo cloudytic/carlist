@@ -1,0 +1,36 @@
+@(map: java.util.Map[String, Object], request: Http.Request)
+
+@account = @{map.get("account").asInstanceOf[Account]}
+@dash.layout("Profile", styles = styles, scripts = scripts, request = request) {
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-0"> <div class="card-header">
+                <h3 class="card-title">
+                    <span class="float-start">Profile</span>
+                    <a href="@routes.AcProfileController.edit()" class="btn btn-secondary float-end">Edit</a>
+
+                </h3>
+            </div>
+                <div class="card-body">
+                    Name: @account.businessName
+                    <br>
+                    Phone: @account.phone
+                </div>
+                <div class="card-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@styles = {
+    <style>
+
+    </style>
+}
+
+@scripts = {
+    <script type="text/javascript">
+
+    </script>
+}

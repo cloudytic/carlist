@@ -1,0 +1,210 @@
+@(admins: java.util.List[Admin], total: Long, request: Http.Request)
+
+@import play.mvc.Http;
+@path = @{request.path()}
+
+@admin.layout("Admins", scripts = scripts, request=request) {
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button type="button" class="nav-link active" id="nav-admin-tab" data-bs-toggle="tab" data-bs-target="#nav-admin" role="tab" aria-controls="nav-home" aria-selected="true">Admins</button>
+            <button type="button" class="nav-link" id="nav-roles-tab" data-bs-toggle="tab" data-bs-target="#nav-roles" role="tab" aria-controls="nav-profile" aria-selected="false">Roles</button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-admin" role="tabpanel" aria-labelledby="nav-home-tab">
+
+            <div class="card card-normal">
+                <div class="card-header">
+                    Admins' Table  (Total: @total)
+                    <a href="@routes.AdAdmin.add()" class="btn btn-link">Create Admin</a>
+                </div>
+                <div class="card-body">
+                    <form action="@path" class="col-sm-4">
+                        <div class="input-group">
+                            <input type="text" name="search" class="input-sm form-control" placeholder="Search">
+                            <span class="input-group-btn">
+                                <button class="btn btn-sm btn-white">Go!</button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Admin</th>
+                        <th>Roles</th>
+                        <th>Settings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(admin <- admins) {
+                    <tr>
+                        <td>@admin.name()<br/>@admin.created.format("dd MMM, yyyy")</td>
+                        <td>
+                            <a class="chiBtn btn btn-info btn-xs" href="@routes.AdAdmin.getRoles(admin.id)">
+                                <i class="fa fa-edit"></i> Set Role (@admin.roles.size())
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-default btn-xs" href="@routes.AdAdmin.edit(admin.id)">
+                                <i class="fa fa-edit"></i> Edit
+                            </a>
+                            @if(admin.active) {
+                                <a class="btn btn-success btn-xs confirm" data-href="@routes.AdAdmin.activate(admin.id)">
+                                    <i class="fa fa-check"></i> De-Activate
+                                </a>
+                            } else {
+                                <a class="btn btn-primary btn-xs confirm" data-href="@routes.AdAdmin.activate(admin.id)">
+                                    <i class="fa fa-times"></i> Activate
+                                </a>
+                            }
+
+                            @if(admin.roles.isEmpty) {
+                                <a class="btn btn-danger btn-xs confirm" data-href="@routes.AdAdmin.delete(admin.id)">
+                                    <i class="fa fa-trash"></i> Delete
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="tab-pane fade" id="nav-roles" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <div class="mt-20">
+                <button class="addBtn btn btn-primary float-end" data-type="role" data-msg="Add Role">Add Role</button>
+            </div>
+
+            <table class="table table-bordered table-striped">
+            @for(ro <- AdminRole.list()) {
+                <tr>
+                    <td></td>
+                    <td>@ro</td>
+                    <td>
+                        <button class="editBtn btn btn-default" data-name="@ro" id="@ro.id" data-type="role">Edit</button>
+                    </td>
+                    <td><a href="@routes.AdAdmin.getPerms(ro.id)" class="chiBtn btn btn-link">Set Permissions</a></td>
+                </tr>
+            }
+            </table>
+        </div>
+
+    </div>
+
+
+    <div id="addModal" class="modal">
+        <div class="modal-dialog">
+            <form action="@routes.AdAdmin.addRole()" method="post" class="modal-content">
+                <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+                <div class="modal-header">
+                    <h5 id="addHeader" class="modal-title">Add Role</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input id="addData"	type="text" name="data" class="form-control" required="required" />
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-bs-dismiss="modal">Close</a>
+                    <button id="addSubmit" type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-dialog">
+            <form action="@routes.AdAdmin.editRole()" method="post" class="modal-content">
+                <input type="hidden" name="csrfToken" value="@Util.csrfToken(request)"/>
+
+                <div class="modal-header">
+                    <h5 id="editHeader" class="modal-title">Edit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input id="editId" type="hidden" name="id" />
+                    <input id="editData" type="text" name="data" class="form-control" required="required"/>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-danger" data-bs-dismiss="modal">Close</a>
+                    <button id="editSubmit" type="submit" class="btn btn-primary">Edit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="chiModal" class="modal">
+
+    </div>
+
+    <div id="mergeModal" class="modal">
+
+    </div>
+}
+
+
+
+@scripts = {
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            @if(request.queryString("show").isPresent) {
+                $('#nav-@request.queryString("show").get()-tab').tab('show')
+            }
+            $('.addBtn').click(function(e){
+                $('#addModal').modal('show');
+            });
+            $('.editBtn').click(function(e){
+                var id = $(this).attr("id");
+                var data = $(this).attr("data-name");
+                $('#editId').val(id);
+                $('#editData').val(data);
+                $('#editModal').modal('show');
+            });
+            $(".chiBtn").click(function(){
+                $('#chiModal').html("");
+                $('#ajaxLoad').show();
+                $.ajax({
+                    url: $(this).attr("href"),
+                    success : function(data) {
+                        $('#chiModal').html(data);
+                        $('#chiModal').modal('show');
+                        $('#ajaxLoad').hide();
+                    }
+                });
+                return false;
+            });
+
+            $('.confirm').click(function(e){
+                if(confirm("Are You sure?")){
+                    $("#ajaxLoad").show();
+                    $.ajax({
+                        type: "POST",
+                        url : $(this).attr("data-href"),
+                        success : function(data) {
+                            if(data === "success") {
+                                window.location.reload();
+                            } else {
+                                alert(data);
+                            }
+                        },
+                        complete : function(){
+                            $("#ajaxLoad").hide();
+                        }
+                    });
+                }
+                e.preventDefault();
+            });
+
+            @if(request.flash().get("message").isPresent) {
+                @if(Util.isNotEmpty(request.flash().get("message").get())) {
+                    $("#info-box").html("@request.flash().get("message").get()");
+                    $('#info-modal').modal('show');
+                }
+            }
+        });
+    </script>
+}
