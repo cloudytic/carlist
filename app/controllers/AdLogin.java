@@ -61,19 +61,4 @@ public class AdLogin extends Controller {
 		return redirect(routes.HomeController.index()).withNewSession()
 				.flashing("success", "You've been logged out");
 	}
-
-	public Result startAdmin() {
-		Admin admin = DB.findOne(Admin.class, DB.where().field("email","admin@carloaded.com"));
-		if(admin == null) {
-			admin = new Admin();
-			admin.setEmail("admin@carloaded.com");
-			admin.setHashedPassword("Sup3r@dm1n");
-			admin.setFirstName("Admin");
-			admin.setLastName("");
-			DB.save(admin);
-			return redirect(routes.AdLogin.index());
-		} else {
-			return notFound();
-		}
-	}
 }

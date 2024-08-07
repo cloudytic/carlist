@@ -216,7 +216,7 @@ public class ListingController extends Controller {
             display.phone = auto.account.phone;
             if(Util.isNotEmpty(auto.account.whatsapp)) {
                 display.whatsapp = auto.account.whatsapp();
-                display.whatsAppLink = "whatsapp://send?text=Hi, I will like to get more information on this car you listed on Carloaded.com " +
+                display.whatsAppLink = "whatsapp://send?text=Hi, I will like to get more information on this car you listed on {placeholder} " +
                         Util.website() + "/cars/" + auto.getUrl() + " &phone=" + auto.account.whatsapp();
             }
             display.url = auto.account.url();

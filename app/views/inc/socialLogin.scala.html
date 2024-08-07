@@ -33,7 +33,7 @@
         form.setAttribute('action', oauth2Endpoint);
 
         // Parameters to pass to OAuth 2.0 endpoint.
-        var params = {'client_id': '256057742181-1g549pe4gs3g169gu8mqpb0a4cp4fco3.apps.googleusercontent.com',
+        var params = {'client_id': '{placeholder}.apps.googleusercontent.com',
             'redirect_uri': '@Util.website()@routes.LoginController.index()',
             'response_type': 'token',
             'scope': 'https://www.googleapis.com/auth/userinfo.email',
@@ -69,7 +69,7 @@
       window.fbAsyncInit = function() {
           <!-- Initialize the SDK with your app and the Graph API version for your app -->
           FB.init({
-              appId            : '905421146235222',
+              appId            : '{placeholder}',
               xfbml            : true,
               version          : 'v19.0'
           });

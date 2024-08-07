@@ -10,7 +10,6 @@ import play.mvc.Http;
 import play.mvc.Result;
 import pojos.Passwords;
 import services.DB;
-import services.MessageService;
 
 import javax.inject.Inject;
 import java.util.Calendar;
@@ -44,7 +43,7 @@ public class PasswordResetController extends Controller {
 
                 //Send password reset email
                 System.out.println("prompting sending here");
-                MessageService.resetPassword(account, guid);
+                //MessageService.resetPassword(account, guid);
 
                 info = "Mail sent, please check your email for further instructions";
             } else {

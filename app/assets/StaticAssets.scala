@@ -17,6 +17,6 @@ object StaticAssets extends Controller {
     }
   }
 
-  var images = "https://images.carloaded.com/"
+  var images = "https://{placeholder}/"
 
 }

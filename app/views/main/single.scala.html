@@ -511,13 +511,13 @@
 
 @meta = {
     <meta name="robots" content="index, follow" />
-    <meta name="description" content="Check out @auto.getH1. Used cars for sale. New cars For sale. Buy from trusted sellers on Carloaded.com." />
+    <meta name="description" content="Check out @auto.getH1. Used cars for sale. New cars For sale. Buy from trusted sellers on {placeholder}." />
 
     <link rel="canonical" href="@canonicalUrl" />
     <link rel="alternate" href="@canonicalUrl" hreflang="en" />
 
     <meta property="og:title" content="@auto.getH1" />
-    <meta property="og:description" content="Check out @auto.getH1. Used cars for sale. New cars For sale. Buy from trusted sellers on Carloaded.com." />
+    <meta property="og:description" content="Check out @auto.getH1. Used cars for sale. New cars For sale. Buy from trusted sellers on {placeholder}." />
     <meta property="og:type" content="Product" />
     <meta property="og:url" content="@canonicalUrl" />
     <meta property="og:locality" content="@auto.locality" />
@@ -526,7 +526,7 @@
     @if(auto.getPictures.size() > 0) {
         <meta property="og:image" content="@StaticAssets.getImg(auto.getPictures.get(0).getUrl("large"))" />
     }
-    <meta property="og:site_name" content="Carloaded.com" />
+    <meta property="og:site_name" content="{placeholder}" />
 }
 
 @styles = {

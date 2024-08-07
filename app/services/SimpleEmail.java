@@ -10,9 +10,9 @@ import pojos.Smtp;
 public class SimpleEmail {
     public static Smtp smtp() {
         Smtp smtp = new Smtp();
-        smtp.username = "Carloaded";//"info@carloaded.com";//"AKIAV5DML3CZZOZY4KHF";
-        smtp.password = "TrRcqo_qRIS48SnceNoZNg";//"FCFDCF4FEB169969DABFF13E4FC83C05BC44";//"BCHDbs9yqh2huFf/UqJ9HTrgzS0Y2BaIWoCuWYZO9Z3p";
-        smtp.host = "smtp.mandrillapp.com";//"smtp.elasticemail.com";//"email-smtp.us-east-1.amazonaws.com";
+        smtp.username = "";//"info@{placeholder}";//"AKIAV5DML3CZZOZY4KHF";
+        smtp.password = "";//"FCFDCF4FEB169969DABFF13E4FC83C05BC44";//"BCHDbs9yqh2huFf/UqJ9HTrgzS0Y2BaIWoCuWYZO9Z3p";
+        smtp.host = "";//"smtp.elasticemail.com";//"email-smtp.us-east-1.amazonaws.com";
         smtp.port = 587;//2525; //587;
         return smtp;
     }

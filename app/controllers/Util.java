@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 public class Util {
     public static String website() {
-        return "https://carloaded.com";
+        return "{placeholder}";
     }
 
     public static Html sanitizeHtml(String html) {

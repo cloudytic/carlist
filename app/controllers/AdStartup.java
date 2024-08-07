@@ -1,18 +1,11 @@
 package controllers;
 
 import authority.SecuredAdmin;
-import models.Auto;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
-import pojos.Param;
-import search.Searcher;
-import services.DB;
 import services.Exec;
-import services.Starter;
-
-import java.util.List;
 
 @Security.Authenticated(SecuredAdmin.class)
 public class AdStartup extends Controller {
@@ -27,14 +20,6 @@ public class AdStartup extends Controller {
 
         if(d.equals("indexAccounts")) {
             indexAccounts();
-        }
-
-        if(d.equals("doScrape")) {
-            Starter.doScrape();
-        }
-
-        if(d.equals("restartCrawl")) {
-            Starter.restartCrawl();
         }
 
         return redirect(routes.AdAdmin.index());

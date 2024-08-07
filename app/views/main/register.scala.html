@@ -2,7 +2,7 @@
 
 @main.layout("Register", request=request, scripts=scripts, styles=styles) {
     <div id="g_id_onload"
-    data-client_id="256057742181-1g549pe4gs3g169gu8mqpb0a4cp4fco3.apps.googleusercontent.com"
+    data-client_id="{placeholder}.apps.googleusercontent.com"
     data-login_uri="@Util.website()@routes.LoginController.socialLogin()">
     </div>
 
@@ -71,10 +71,6 @@
                                     <span class="help-block" id="confirmPassSpan">@{form("confirmPass").error.map { error => error.message }}</span>
                                 </div>
                                 <div class="checkbox-forgot d-flex align-items-center justify-content-between">
-                                    <div class="single-form">
-                                        <input id="checkbox2" type="checkbox" checked>
-                                        <label for="checkbox2"><span></span> I accept <a href="@routes.HomeController.terms()">Term of Use</a> & <a href="@routes.HomeController.policy()">Privacy Policy</a></label>
-                                    </div>
                                     <div class="single-form">
                                         <label><span></span> Already Registered? <a href="@routes.LoginController.index()">Login Here</a></label>
                                     </div>

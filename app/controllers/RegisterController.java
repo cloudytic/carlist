@@ -7,7 +7,6 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import services.DB;
-import services.MessageService;
 import utilities.HashUtil;
 
 import javax.inject.Inject;
@@ -61,10 +60,9 @@ public class RegisterController extends Controller {
             AdAcctCrud.saveAccount(account);
 
 
-            //TODO: OTP Verification
-
+            //TODO: Verification
             //Send Verify Email Message
-            MessageService.welcome(account);
+            //MessageService.welcome(account);
 
             return redirect(routes.AcProfileController.edit())
                     .addingToSession(request, Auth.ACCOUNT, account.getId().toString());
@@ -136,7 +134,7 @@ public class RegisterController extends Controller {
             AdAcctCrud.saveAccount(account);
 
             //Send welcome email
-            MessageService.welcome(account);
+            //MessageService.welcome(account);
 
             return redirect(routes.AcDashboardController.index())
                     .flashing("info", "You have successfully verified your email address");
@@ -148,7 +146,7 @@ public class RegisterController extends Controller {
     public Result sendVerifyEmail(Long id, Http.Request request) {
         Account account = DB.findOne(Account.class, id);
         if(account != null) {
-            MessageService.verifyEmail(account);
+            //MessageService.verifyEmail(account);
             return ok("success");
         }
         return ok("error");

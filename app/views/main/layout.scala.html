@@ -1,6 +1,6 @@
 @(title: String, meta: Html = Html(""), styles: Html = Html(""), scripts: Html = Html(""), request: Http.Request)(content: Html)
 
-@master(title + " | Carloaded.com", meta, master_styles=master_styles, master_scripts=master_scripts, request) {
+@master(title + " | {placeholder}", meta, master_styles=master_styles, master_scripts=master_scripts, request) {
     @if(UApp.isNot(request)) {
         @inc.header()
 
@@ -12,11 +12,7 @@
                     <div class="header-social-compare-login d-flex align-items-center">
                         <div class="header-social-menu">
                             <ul class="social">
-                                <li><a href="https://www.youtube.com/@@carloaded" target="_blank"><i class="ion-social-youtube-outline"></i></a></li>
-                                <li><a href="https://www.facebook.com/carloadedng" target="_blank"><i class="ion-social-facebook"></i></a></li>
-                                <li><a href="https://www.instagram.com/carloadedng" target="_blank"><i class="ion-social-instagram-outline"></i></a></li>
-                                <li><a href="https://twitter.com/carloadedng" target="_blank"><i class="ion-social-twitter"></i></a></li>
-                                <li><a href="https://www.tiktok.com/@@carloadedng" target="_blank"><i class="ion-social-tumblr"></i></a></li>
+
                             </ul>
                         </div>
                         <div class="header-compare-login">
@@ -76,7 +72,7 @@
                 <div class="copyright">
                     <p>&copy;
                         <script>document.write(new Date().getFullYear() + ' ');</script>
-                        <span>Carloaded.com</span>
+                        <span>{placeholder}</span>
                     </p>
                 </div>
             </div>
@@ -104,7 +100,7 @@
                                     </div>
                                     <div class="single-text">
                                         <p>
-                                            <span><a href="mailto:support@@carloaded.com">support@@carloaded.com</a></span>
+                                            <span><a href="mailto:support@@{placeholder}">support@@{placeholder}</a></span>
                                         </p>
                                     </div>
                                 </div>
@@ -115,8 +111,6 @@
                                 <h3 class="footer-title">Links</h3>
 
                                 <ul class="menu-items">
-                                    <li><a href="@routes.HomeController.about()">About</a></li>
-                                    <li><a href="@routes.HomeController.contact()">Contact</a></li>
                                     <li><a href="@routes.BlogController.posts("")">Blog</a></li>
                                     @*
                                     <li><a href="#">Testimonials</a></li>
@@ -129,8 +123,6 @@
                                 <h3 class="footer-title">Help Center</h3>
 
                                 <ul class="menu-items">
-                                    <li><a href="@routes.HomeController.policy()">Privacy Policy</a></li>
-                                    <li><a href="@routes.HomeController.terms()">Terms & Conditions</a></li>
                                     <li><a href="#">FAQs</a></li>
                                     @*
                                     <li><a href="#">Pricing & Plan</a></li>
@@ -168,17 +160,13 @@
                             <p>&copy;
                                 <script>
                                         document.write(new Date().getFullYear() + ' ');
-                                </script> <span> CarLoaded.com </span>
+                                </script> <span> {placeholder} </span>
                             </p>
                         </div>
                         <div class="footer-social">
                             <span class="label">Follow us</span>
                             <ul class="socia">
-                                <li><a href="https://www.youtube.com/@@carloaded" target="_blank"><i class="ion-social-youtube-outline"></i></a></li>
-                                <li><a href="https://www.facebook.com/carloadedng" target="_blank"><i class="ion-social-facebook"></i></a></li>
-                                <li><a href="https://www.instagram.com/carloadedng" target="_blank"><i class="ion-social-instagram-outline"></i></a></li>
-                                <li><a href="https://twitter.com/carloadedng" target="_blank"><i class="ion-social-twitter"></i></a></li>
-                                <li><a href="https://www.tiktok.com/@@carloadedng" target="_blank"><i class="ion-social-tumblr"></i></a></li>
+
                             </ul>
                         </div>
                         <ul class="footer-menu-language">
@@ -200,13 +188,7 @@
             @* TODO: fixed for copyright *@
             <li@* class="menu-item-has-children"*@>
                 <a href="@routes.SellerController.index()">Sellers</a>
-                @*<ul class="sub-menu">
-                    <li><a href="@routes.SellerController.index()">Sellers</a></li>
-                    <li><a href="@routes.ListingController.sellers()">Sellers 2</a></li>
-                </ul>*@
             </li>
-            <li><a href="@routes.HomeController.about()">About Us</a></li>
-            <li><a href="@routes.HomeController.contact()">Contact</a></li>
             <li><a href="@routes.BlogController.posts("")">Blog</a></li>
         </ul>
     </nav>

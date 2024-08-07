@@ -2,15 +2,7 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET         /startadmin                               controllers.AdLogin.startAdmin()
-GET         /request-account-deletion                 controllers.HomeController.requestAcctDeletion(request: Request)
-
-
 GET         /                                         controllers.HomeController.index(request: Request)
-GET         /about                                    controllers.HomeController.about(request: Request)
-GET         /contact                                  controllers.HomeController.contact(request: Request)
-GET         /terms                                    controllers.HomeController.terms(request: Request)
-GET         /policy                                   controllers.HomeController.policy(request: Request)
 
 GET         /sitemap-cars.xml                         controllers.SiteMapController.autos(request: Request)
 
@@ -74,54 +66,8 @@ GET         /profile/settings                         controllers.AcProfileContr
 POST        /profile/settings                         controllers.AcProfileController.update(request: Request)
 POST        /profile/updatelogo                       controllers.AcProfileController.updateLogo(request: Request)
 
-
-
-##########API ROUTES
-GET         /api/listing                              controllers.ApiListingController.listing(request: Request)
-GET         /api/listingAggs                          controllers.ApiListingController.listingAggs(request: Request)
-GET         /api/listing/:id                          controllers.ApiListingController.single(id: Long, request: Request)
-
-GET         /api/fields                               controllers.ApiFieldsController.fields()
-
-GET         /api/makeModels                           controllers.ApiFieldsController.makeModels()
-GET         /api/stateLocalities                      controllers.ApiFieldsController.stateLocalities()
-
-POST        /api/login                                controllers.ApiAuthController.login(request: Request)
-POST        /api/register                             controllers.ApiAuthController.register(request: Request)
-
-+ nocsrf
-POST        /api/getAccount                           controllers.ApiAcProfileController.getAccount(request: Request)
-+ nocsrf
-POST        /api/editAccount                          controllers.ApiAcProfileController.editAccount(request: Request)
-+ nocsrf
-POST        /api/changePassword                        controllers.ApiAcProfileController.changePassword(request: Request)
-+ nocsrf
-POST        /api/updateLogo                            controllers.ApiAcProfileController.updateLogo(request: Request)
-
-+ nocsrf
-POST        /api/postAd                               controllers.ApiAcAutoController.create(request: Request)
-GET         /api/autos                                controllers.ApiAcAutoController.index(request: Request)
-GET         /api/autos/:id                            controllers.ApiAcAutoController.single(id: Long, request: Request)
-+ nocsrf
-POST        /api/editAuto/:id                         controllers.ApiAcAutoController.update(id: Long, request: Request)
-+ nocsrf
-POST        /api/publishAuto/:id                      controllers.ApiAcAutoController.publish(id: Long, request: Request)
-+ nocsrf
-POST        /api/trashAuto/:id                        controllers.ApiAcAutoController.trash(id: Long, request: Request)
-+ nocsrf
-POST        /api/postPicture                          controllers.ApiAcAutoController.uploadPicture(request: Request)
-+ nocsrf
-POST        /api/deletePicture/:id                    controllers.ApiAcAutoController.deletePicture(id: Long, request: Request)
-+ nocsrf
-POST        /api/makePicturePrimary/:id               controllers.ApiAcAutoController.makePicturePrimary(id: Long, request: Request)
-
-
 ##########ADMIN ROUTES
 GET         /admin/startup                            controllers.AdStartup.startup(request: Request)
-
-GET         /admin/ad-crawl                           controllers.AdCrawler.add(request: Request)
-POST        /admin/ad-crawl                           controllers.AdCrawler.create(request: Request)
-POST        /admin/ad-crawl-file                      controllers.AdCrawler.createFile(request: Request)
 
 GET         /admin/account/login                      controllers.LoginController.adminAcountLogin(request: Request)
 

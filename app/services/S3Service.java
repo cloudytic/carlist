@@ -30,7 +30,7 @@ import java.util.Objects;
 
 @Singleton
 public class S3Service {
-    private static final String BUCKET = "images.carloaded.com";
+    private static final String BUCKET = "{bucket}";
     private static final String S3LARGE = "large/";
     private static final String S3MEDIUM = "medium/";
     private static final String S3LOGODIR = "logo/";
